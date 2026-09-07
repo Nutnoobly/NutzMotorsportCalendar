@@ -43,82 +43,25 @@ This is a classic pattern: **own your data, don't proxy someone else's.**
 
 ## 3. Database Design (the core)
 
-This is your first big backend task. Data is stored in **tables**. A table has **columns**
-(like a spreadsheet's columns) and **rows** (entries).
+The complete schema specification, ERD, and UML class diagrams are located in [`DATABASE.md`](file:///home/nutnoobly/User/Code/Project/NutzMotosportCalendar/DATABASE.md).
 
-### 3.1 The five tables
-
-```
-series
-  id          TEXT PRIMARY KEY   -- 'f1' or 'motogp'
-  name        TEXT NOT NULL
-
-events
-  id            BIGSERIAL PRIMARY KEY
-  series_id     TEXT REFERENCES series(id)
-  season        INT
-  round         INT
-  slug          TEXT UNIQUE       -- human-friendly url, e.g. '2026-monza-gp'
-  name          TEXT              -- 'Italian Grand Prix'
-  circuit_name  TEXT
-  locality      TEXT              -- city, e.g. 'Monza'
-  country       TEXT              -- e.g. 'Italy'
-  starts_at     TIMESTAMPTZ       -- race start time
-  status        TEXT              -- 'scheduled' | 'completed' | 'cancelled' | 'postponed'
-  official_url  TEXT
-  ticket_url    TEXT
-
-sessions
-  id         BIGSERIAL PRIMARY KEY
-  event_id   BIGINT REFERENCES events(id) ON DELETE CASCADE
-  kind       TEXT                 -- 'practice' | 'qualifying' | 'race' | 'sprint'
-  name       TEXT
-  starts_at  TIMESTAMPTZ
-
-results
-  event_id     BIGINT REFERENCES events(id) ON DELETE CASCADE
-  position     INT
-  driver_name  TEXT
-  team_name    TEXT
-  PRIMARY KEY (event_id, position)
-
-sync_runs
-  id          BIGSERIAL PRIMARY KEY
-  series_id   TEXT
-  started_at  TIMESTAMPTZ DEFAULT now()
-  ok          BOOLEAN
-  message     TEXT
-```
-
-### 3.2 Relationships (how tables connect)
+### 3.1 The eight tables
 
 ```
-series 1 ──── many events ──── many sessions
-            event ──── many results
+series       -- 'f1', 'motogp' lookup
+circuits     -- normalized track venues (Monza, Silverstone, etc.)
+teams        -- constructors per series (Ferrari, Red Bull, Ducati, etc.)
+drivers      -- racers with permanent numbers, timing codes, and current team FK
+events       -- Grand Prix weekends (season, round, circuit FK, status, slug)
+sessions     -- full weekend timetable (FP1, Quali, Sprint, Main Race)
+results      -- podium top-3 finishes (event FK, session_type, position 1-3, driver FK, team FK)
+sync_runs    -- daily API ingestion audit log
 ```
 
-- A **series** (F1 or MotoGP) has many **events** (races).
-- An **event** has many **sessions** (practice, quali, race) and many **results** positions.
-- `series_id` on events is a **foreign key**: it says "this event belongs to which series?"
-- `ON DELETE CASCADE`: delete an event → its sessions and results go too (cleanup for free).
-
-### 3.3 Rules that keep you out of trouble
-
-- **All timestamps are `TIMESTAMPTZ`.** This stores an instant in time with timezone info,
-  in UTC internally. If you use plain `TIMESTAMP`, you'll hit timezone bugs later.
-- **`slug` is `UNIQUE`** — it becomes part of the URL (`/events/{slug}`). Duplicates would
-  break routing.
-- **Composite primary key `(event_id, position)`** on results — one event can't have two
-  drivers in the same position. This is the correct key, not an auto-id.
-- **Standing: `status` as text** makes it simple to gray out canceled events.
-
-### 3.4 Why a separate `sessions` table?
-
-An F1 weekend has practice, quali, race — each at a different time. If you crammed them into
-`events` as separate columns, every event would have empty columns (MotoGP has different
-session structures). A child table handles "maybe many, maybe different" cleanly.
+See [`DATABASE.md`](file:///home/nutnoobly/User/Code/Project/NutzMotosportCalendar/DATABASE.md) for full column definitions, data types, constraints, and Mermaid diagrams.
 
 ---
+
 
 ## 4. Migrations
 
