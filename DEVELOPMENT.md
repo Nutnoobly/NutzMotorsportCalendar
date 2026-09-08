@@ -119,7 +119,7 @@ External APIs change without warning. Every piece of data you read should be tre
 
 Each step is a small shippable chunk. Don't jump ahead — each builds on the previous.
 
-- [ ] **0. Toolchain** — done (Go, templ, sqlc, go.mod).
+- [x] **0. Toolchain** — done (Go, templ, sqlc, go.mod).
 - [ ] **1. Migrations** — write `supabase/migrations/0001_init.sql` + your runner (`cmd/migrate`).
 - [ ] **2. sqlc queries** — write `SELECT`/`INSERT` SQL, run `sqlc generate`, get typed Go.
 - [ ] **3. HTTP routes** — `net/http` mux: home, event detail, `.ics`, refresh endpoint.
