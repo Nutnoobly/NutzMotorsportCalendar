@@ -45,13 +45,11 @@ github.com/Nutnoobly/NutzMotosportCalendar.
 - Toolchain ready: Go 1.27.0 at ~/.local/go; templ v0.3.1020 + sqlc v1.31.1 at ~/go/bin;
   go.mod initialized (module github.com/Nutnoobly/NutzMotosportCalendar). Shell needs:
   `export PATH=$HOME/.local/go/bin:$HOME/go/bin:$PATH`
-- Roadmap steps: [done] 0 toolchain → [in progress] 1 migrations (USER-authored):
-  go.mod re-created by user themselves (module github.com/Nutnoobly/NutzMotosportCalendar,
-  go 1.26.6; Motorsport→Motosport typo caught in review and fixed by user).
-  User created empty supabase/migrations/0001_init.sql and authored first 4 tables. Assistant generates/completes the 8 tables following agreed conventions.
-  → then 2 sqlc/pgx queries → 3 net/http routes → 4 templ views → 5 htmx/countdown
+- Roadmap steps: [done] 0 toolchain → [done] 1 migrations → [in-progress] 2 sqlc/pgx queries
+  (sqlc.yaml & db/queries ready; Go code in internal/db and cmd/ rolled back for user self-coding)
+  → [next] 3 net/http routes → 4 templ views → 5 htmx/countdown
   → 6 timezone JS → 7 refresh fetchers (Jolpica F1, Pulselive MotoGP) → 8 deploy (Fly.io + GHA cron).
-- Resume point: finalize DB schema & UML, then user fills in supabase/migrations/0001_init.sql.
+- Resume point: User follows Step 2 guide in DEVELOPMENT.md (`go get pgx/v5`, `sqlc generate`, write `internal/db/conn.go`, write `cmd/testdb/main.go`) to learn Go by coding. Assistant reviews.
 - Docs written 2026-08-26: README.md (public portfolio — features, stack, quickstart, structure)
   and DEVELOPMENT.md (private dev guide — DB design, migrations, data sources, build order 0–8
   checklist, gotchas). User authors SQL/code; both docs align with locked decisions.
@@ -95,3 +93,9 @@ github.com/Nutnoobly/NutzMotosportCalendar.
 - 2026-09-07: Round 7 completed. Locked driver/team dual foreign keys + driver current_team_id, surrogate circuit PK + slug, on-the-fly Go summary, and timetable sessions table. Frontier emptied.
 - 2026-09-08: user authored initial 4 tables in `supabase/migrations/0001_init.sql` and requested assistant to generate the remaining 4 tables adapting their prefix naming style, restricted to `varchar`, `char`, `int`, `double`, `timestamp`, and `boolean`. Opened Round 8 frontier on Postgres dialect compatibility, PK auto-increment, timezone handling, and column mapping.
 - 2026-09-08: Round 8 completed. Decisions locked on Postgres dialect (double precision, IDENTITY PKs, timestamptz, prefix column naming across all 8 tables, fixing initial typos). Frontier emptied.
+- 2026-09-08: user requested assistant to implement Step 2 (Database Access Layer). Created `sqlc.yaml`, query files in `db/queries/` (`series.sql`, `events.sql`, `results.sql`, `sync.sql`), generated `internal/db/` via `sqlc generate`, wired `pgxpool` connection helper in `internal/db/conn.go`, and wrote verification tool `cmd/testdb/main.go`. Identified Supabase IPv6 direct connect vs IPv4 pooler requirement and updated `.env.example`.
+- 2026-09-08: user requested rollback of Go files (`cmd/`, `internal/`, `go.mod`, `go.sum`) so they can code the Go implementation themselves for learning. Assistant reverted Go files, authored comprehensive Step 2 guide with Go fundamentals and code walkthrough in `DEVELOPMENT.md`, updated `README.md` and `AGENTS.md`. Assistant role re-confirmed: review-only for all backend Go code.
+- 2026-09-08: user questioned if `sqlc` is outdated and requested alternatives. Assistant evaluated modern Go ecosystem (sqlc vs native pgx/v5 vs Bun vs GORM) and produced implementation plan artifact. User decided to stick with `sqlc` + `pgx/v5`. Ready for user to code Step 2.
+- 2026-09-08: user reported unable to install sqlc and import error for pgx/v5 in internal/db/events.sql.go. Assistant resolved PATH configuration in `~/.bashrc` for Go tools, removed stray root binary, installed `github.com/jackc/pgx/v5` into `go.mod`, and verified clean build with `go build ./...` and `sqlc generate`.
+- 2026-09-08: user added `serie_slug` column to `SERIES` table. Assistant updated `db/queries/series.sql` (`ListSeries`, `GetSeries`, and added `GetSeriesBySlug`), updated `SERIES` seed insert in `0001_init.sql`, regenerated Go code via `sqlc generate`, fixed `SerieSlug` field reference in `cmd/testdb/main.go`, and verified clean build with `go build ./...` and `go vet ./...`.
+- 2026-09-08: user switched to Supabase Session Mode Pooler (IPv4 compatibility). Updated `.env.example` and `DEVELOPMENT.md` explaining Session Mode (port 5432) vs Transaction Mode (port 6543) for Go / pgx.

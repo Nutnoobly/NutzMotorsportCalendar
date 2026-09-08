@@ -1,7 +1,8 @@
 -- 1. SERIES
 CREATE TABLE SERIES (
     serie_id varchar(10) PRIMARY KEY,
-    serie_name varchar(50) NOT NULL
+    serie_name varchar(50) NOT NULL,
+    serie_slug varchar(50) UNIQUE NOT NULL
 );
 
 -- 2. CIRCUITS
@@ -99,9 +100,9 @@ CREATE TABLE SYNC_RUN (
 );
 
 -- SEED DATA
-INSERT INTO SERIES (serie_id, serie_name) VALUES
-    ('f1', 'Formula 1'),
-    ('motogp', 'MotoGP')
+INSERT INTO SERIES (serie_id, serie_name, serie_slug) VALUES
+    ('f1', 'Formula 1', 'f1'),
+    ('motogp', 'MotoGP', 'motogp')
 ON CONFLICT (serie_id) DO NOTHING;
 
 -- INDEXES
@@ -113,4 +114,3 @@ CREATE INDEX IF NOT EXISTS idx_events_external_id ON EVENTS(serie_id, event_exte
 CREATE INDEX IF NOT EXISTS idx_drivers_external_id ON DRIVERS(serie_id, driver_external_id) WHERE driver_external_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_teams_external_id ON TEAMS(serie_id, team_external_id) WHERE team_external_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_circuits_slug ON CIRCUITS(circuit_slug);
-

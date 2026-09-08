@@ -39,12 +39,15 @@ go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
 # 3. Set up environment
 cp .env.example .env
-# Edit .env and fill in your DATABASE_URL from Supabase
+# Edit .env and fill in your Supabase connection pooler DATABASE_URL
 
-# 4. Run migrations (after you write them)
-# go run ./cmd/migrate
+# 4. Generate type-safe Go database layer
+sqlc generate
 
-# 5. Start dev server
+# 5. Verify database connection
+go run ./cmd/testdb/main.go
+
+# 6. Start dev server (coming in Step 3)
 # go run ./cmd/server
 ```
 
@@ -52,14 +55,18 @@ cp .env.example .env
 
 ```
 NutzMotosportCalendar/
-├── cmd/                  # Entry points (server, migrate)
+├── cmd/                  # Entry points (server, testdb)
 ├── internal/
-│   ├── db/               # Database connection, migrations, queries
+│   ├── db/               # Generated database queries & pgxpool helper
 │   ├── refresh/          # Fetchers for F1 and MotoGP APIs
 │   └── web/              # HTTP handlers
-├── migrations/           # SQL migration files
+├── db/
+│   └── queries/          # Raw SQL query definitions for sqlc
+├── supabase/
+│   └── migrations/       # Supabase SQL schema migrations
 ├── views/                # Templ template components
 ├── static/               # CSS, JS, images
+├── sqlc.yaml             # sqlc configuration file
 └── .env.example          # Environment variable template
 ```
 
