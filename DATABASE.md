@@ -28,6 +28,7 @@ erDiagram
     SERIES {
         text id PK "e.g. 'f1', 'motogp'"
         text name "Formula 1, MotoGP"
+        text slug UK "f1, motogp"
     }
 
     CIRCUITS {
@@ -113,6 +114,7 @@ classDiagram
     class Series {
         +String ID
         +String Name
+        +String Slug
     }
 
     class Circuit {
@@ -212,8 +214,9 @@ Static lookup table for motorsport series.
 |---|---|---|---|
 | `id` | `TEXT` | `PRIMARY KEY` | Unique series code: `'f1'`, `'motogp'` |
 | `name` | `TEXT` | `NOT NULL` | Series display name (`Formula 1`, `MotoGP`) |
+| `slug` | `TEXT` | `NOT NULL UNIQUE` | URL-friendly slug (`'f1'`, `'motogp'`) |
 
-*Initial seed:* `('f1', 'Formula 1')`, `('motogp', 'MotoGP')`.
+*Initial seed:* `('f1', 'Formula 1', 'f1')`, `('motogp', 'MotoGP', 'motogp')`.
 
 ---
 
