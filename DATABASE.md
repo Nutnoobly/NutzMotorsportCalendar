@@ -1,6 +1,6 @@
 # Database Architecture & UML Specification
 
-This document defines the complete PostgreSQL database design and domain model for **NutzMotosportCalendar** (Supabase Postgres, consumed via Go `pgx` + `sqlc`).
+This document defines the complete PostgreSQL database design and domain model for **NutzMotorsportCalendar** (Supabase Postgres, consumed via Go `pgx` + `sqlc`).
 
 ---
 

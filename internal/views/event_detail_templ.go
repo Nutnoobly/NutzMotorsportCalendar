@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"fmt"
-	"github.com/Nutnoobly/NutzMotosportCalendar/internal/db"
+	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/db"
 )
 
 func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db.ListResultsByEventIDRow) templ.Component {

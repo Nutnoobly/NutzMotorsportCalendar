@@ -1,6 +1,6 @@
 # Development Guide
 
-This is your working reference for building NutzMotosportCalendar — written for a first-time
+This is your working reference for building NutzMotorsportCalendar — written for a first-time
 mini-project. Read it top to bottom once, then jump to sections as you work. It explains the
 *what* and the *why*, not just the how, so you can make your own decisions.
 
@@ -45,7 +45,7 @@ This is a classic pattern: **own your data, don't proxy someone else's.**
 
 ## 3. Database Design (the core)
 
-The complete schema specification, ERD, and UML class diagrams are located in [`DATABASE.md`](file:///home/nutnoobly/User/Code/Project/NutzMotosportCalendar/DATABASE.md).
+The complete schema specification, ERD, and UML class diagrams are located in [`DATABASE.md`](file:///home/nutnoobly/User/Code/Project/NutzMotorsportCalendar/DATABASE.md).
 
 ### 3.1 The eight tables
 
@@ -60,7 +60,7 @@ results      -- podium top-3 finishes (event FK, session_type, position 1-3, dri
 sync_runs    -- daily API ingestion audit log
 ```
 
-See [`DATABASE.md`](file:///home/nutnoobly/User/Code/Project/NutzMotosportCalendar/DATABASE.md) for full column definitions, data types, constraints, and Mermaid diagrams.
+See [`DATABASE.md`](file:///home/nutnoobly/User/Code/Project/NutzMotorsportCalendar/DATABASE.md) for full column definitions, data types, constraints, and Mermaid diagrams.
 
 ---
 

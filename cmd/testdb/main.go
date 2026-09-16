@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"context"
 
-	"github.com/Nutnoobly/NutzMotosportCalendar/internal/db"
+	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/db"
 )
 
 func loadDotEnv(filepath string) {

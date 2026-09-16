@@ -3,7 +3,7 @@ package web
 import (
 	"net/http"
 
-	"github.com/Nutnoobly/NutzMotosportCalendar/internal/db"
+	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/db"
 )
 
 // Server holds dependencies required by HTTP handlers.

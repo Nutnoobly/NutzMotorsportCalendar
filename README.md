@@ -1,4 +1,4 @@
-# NutzMotosportCalendar
+# NutzMotorsportCalendar
 
 A small public fan site showing an **F1 + MotoGP** race calendar with auto-fetched schedules and results. Built as a learning and portfolio project.
 
@@ -30,8 +30,8 @@ A small public fan site showing an **F1 + MotoGP** race calendar with auto-fetch
 
 ```bash
 # 1. Clone
-git clone https://github.com/Nutnoobly/NutzMotosportCalendar.git
-cd NutzMotosportCalendar
+git clone https://github.com/Nutnoobly/NutzMotorsportCalendar.git
+cd NutzMotorsportCalendar
 
 # 2. Install tools (if you haven't already)
 go install github.com/a-h/templ/cmd/templ@latest
@@ -54,7 +54,7 @@ go run ./cmd/testdb/main.go
 ## Project Structure
 
 ```
-NutzMotosportCalendar/
+NutzMotorsportCalendar/
 ├── cmd/                  # Entry points (server, testdb)
 ├── internal/
 │   ├── db/               # Generated database queries & pgxpool helper
@@ -82,4 +82,4 @@ NutzMotosportCalendar/
 
 Built by [Nutnoobly](https://github.com/Nutnoobly) as a learning project.
 
-Source code: [github.com/Nutnoobly/NutzMotosportCalendar](https://github.com/Nutnoobly/NutzMotosportCalendar)
+Source code: [github.com/Nutnoobly/NutzMotorsportCalendar](https://github.com/Nutnoobly/NutzMotorsportCalendar)

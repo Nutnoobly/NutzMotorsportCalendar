@@ -5,16 +5,15 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/a-h/templ"
-	"github.com/nutzmotosportcalendar/internal/db"
-	"github.com/nutzmotosportcalendar/internal/views"
-	"github.com/pgtype/pgtype"
+	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/db"
+	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/views"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 // handleHome renders the homepage with race events from Supabase.
 func (s *Server) handleHome(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
+	http.NotFound(w, r)
 		return
 	}
 
@@ -85,7 +84,7 @@ func (s *Server) handleICS(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/calendar; charset=utf-8")
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.ics\"", slug))
-	fmt.Fprintf(w, "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//NutzMotosportCalendar//EN\nX-WR-CALNAME:%s Calendar\nEND:VCALENDAR\n", slug)
+	fmt.Fprintf(w, "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//NutzMotorsportCalendar//EN\nX-WR-CALNAME:%s Calendar\nEND:VCALENDAR\n", slug)
 }
 
 // handleRefresh triggers upstream API sync (protected by secret auth).

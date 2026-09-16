@@ -12,8 +12,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Nutnoobly/NutzMotosportCalendar/internal/db"
-	"github.com/Nutnoobly/NutzMotosportCalendar/internal/web"
+	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/db"
+	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/web"
 )
 
 // loadDotEnv loads simple key=val environment variables from .env if present.
@@ -54,7 +54,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8081"
 	}
 
 	adminSecret := os.Getenv("ADMIN_SECRET")

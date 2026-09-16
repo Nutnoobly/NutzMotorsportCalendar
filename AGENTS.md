@@ -17,7 +17,7 @@ This project follows a strict **Dual-Role Split**:
 
 # Grilling Session Tracker
 
-This file tracks an active grill-me interview for **NutzMotosportCalendar**.
+This file tracks an active grill-me interview for **NutzMotorsportCalendar**.
 It is the session memory: read it at the start of every session.
 
 On session start:
@@ -31,7 +31,7 @@ On session start:
 
 A small public, mobile-first fan site (English) showing an F1 + MotoGP calendar with
 auto-fetched schedules and results — a learning/portfolio project credited to
-github.com/Nutnoobly/NutzMotosportCalendar.
+github.com/Nutnoobly/NutzMotorsportCalendar.
 
 ## Design Tree
 
@@ -61,7 +61,7 @@ github.com/Nutnoobly/NutzMotosportCalendar.
 - Grilling complete for product scope and database design. User codes the backend; assistant guides/reviews only.
 - Backend roadmap was delivered in chat on 2026-08-25 (NOT saved as a file — user chose chat-only).
 - Toolchain ready: Go 1.27.0 at ~/.local/go; templ v0.3.1020 + sqlc v1.31.1 at ~/go/bin;
-  go.mod initialized (module github.com/Nutnoobly/NutzMotosportCalendar). Shell needs:
+  go.mod initialized (module github.com/Nutnoobly/NutzMotorsportCalendar). Shell needs:
   `export PATH=$HOME/.local/go/bin:$HOME/go/bin:$PATH`
 - Roadmap steps: [done] 0 toolchain → [done] 1 migrations → [done] 2 sqlc/pgx queries
   (sqlc.yaml & db/queries ready; internal/db generated; pgxpool connected; cmd/testdb verified)
@@ -90,7 +90,7 @@ github.com/Nutnoobly/NutzMotosportCalendar.
 
 ## Session Log
 
-- 2026-08-25: grilling session started (project: NutzMotosportCalendar)
+- 2026-08-25: grilling session started (project: NutzMotorsportCalendar)
 - 2026-08-25: rounds 1–5 completed; sources verified (Jolpica api.jolpi.ca for F1,
   api.pulselive.motogp.com for MotoGP); frontier emptied; tracker synced after plan mode lifted;
   ending-gate confirmation pending.
