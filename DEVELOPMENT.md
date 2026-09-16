@@ -4,8 +4,10 @@ This is your working reference for building NutzMotosportCalendar — written fo
 mini-project. Read it top to bottom once, then jump to sections as you work. It explains the
 *what* and the *why*, not just the how, so you can make your own decisions.
 
-> One rule that guides everything: **you do the work.** This guide tells you what to build and
-> why, but writing the code is yours. If you get stuck, that's normal — it means you're learning.
+> ### Operating Rules: Dual-Role Split
+> - **Backend (`.go`, SQL, DB)**: **You build, Assistant reviews.** You write the backend Go code, router, and queries for your learning and portfolio goals. The assistant reviews and mentors.
+> - **Frontend & DevOps (`.templ`, HTMX, Tailwind, JS, Deploy)**: **Assistant builds.** The assistant authors all UI templates, styles, client scripts, and deployment configurations.
+> - **Interface Protocol**: **Contract-First.** You define the Go handler signatures and view-model structs; the assistant writes the matching Templ components.
 
 ---
 
@@ -121,261 +123,151 @@ Each step is a small shippable chunk. Don't jump ahead — each builds on the pr
 
 - [x] **0. Toolchain** — done (Go, templ, sqlc, go.mod).
 - [x] **1. Migrations** — done (schema written in `supabase/migrations/0001_init.sql` and applied in Supabase).
-- [x] **2. sqlc queries & DB layer** — configure `sqlc.yaml`, write queries, run `sqlc generate`, wire `pgxpool`, verify with `testdb`.
-- [ ] **3. HTTP routes** — `net/http` mux: home, event detail, `.ics`, refresh endpoint.
-- [ ] **4. Templ views** — layout, home, event pages; `templ generate` after each edit.
-- [ ] **5. HTMX + countdown** — filter tabs swap sections; countdown JS ticks each second.
-- [ ] **6. Timezone JS** — render UTC, convert to visitor's zone client-side.
-- [ ] **7. Refresh fetchers** — Jolpica + Pulselive, upsert into DB.
-- [ ] **8. Deploy** — Dockerfile, Fly.io, GitHub Actions daily cron.
+- [x] **2. sqlc queries & DB layer** — done (`sqlc.yaml`, queries in `db/queries/`, `internal/db/`, `pgxpool`, verified with `cmd/testdb`).
+- [x] **3. HTTP routes [Backend — You build / Assistant reviews]** — done (`net/http` mux: home, event detail, `.ics`, refresh endpoint).
+- [ ] **4. Templ views [Frontend — Assistant builds / Contract-first]** — layout, home, event pages; `templ generate` after each edit.
+- [ ] **5. HTMX + countdown [Frontend — Assistant builds]** — filter tabs swap sections; countdown JS ticks each second.
+- [ ] **6. Timezone JS [Frontend — Assistant builds]** — render UTC, convert to visitor's zone client-side.
+- [ ] **7. Refresh fetchers [Backend — You build / Assistant reviews]** — Jolpica + Pulselive, upsert into DB.
+- [ ] **8. Deploy [DevOps — Assistant builds]** — Dockerfile, Fly.io, GitHub Actions daily cron.
 
 ---
 
-## 7. Step 2 Guide: Database Access Layer (sqlc + pgx)
+## 7. Step 4 Guide: Templ Views & Backend Handler Integration
 
-This section is your hands-on learning guide for Step 2. You will write real Go code, learn Go idioms, and understand how type-safe database access works.
+In Step 4, we replace the plain-text responses in our HTTP handlers with type-safe HTML components built with **Templ** and styled with **Tailwind CSS**.
 
-### 7.1 The Mental Model: Why sqlc + pgx?
+### 7.1 The Mental Model: What is Templ?
 
-In languages like JavaScript (Prisma/TypeORM) or Python (SQLAlchemy/Django ORM), developers often use ORMs that generate SQL on the fly. In production Go, ORMs are often avoided:
-- **ORMs hide queries**: You don't know what SQL is actually running, making performance optimization difficult.
-- **`sqlc` is SQL-first**: You write standard PostgreSQL queries. `sqlc` parses your schema and queries at compile time, and generates native, type-safe Go structs and functions.
-- **`pgx/v5`**: The standard high-performance PostgreSQL driver for Go.
+Templ is a component-based templating language for Go. Unlike standard `html/template` (which parses strings at runtime and can fail unexpectedly), Templ templates are **compiled directly into Go code**:
 
 ```
-[SQL schema] + [SQL queries]
-            │
-            ▼ (sqlc generate)
-[Generated Go structs & methods] (internal/db/)
-            │
-            ▼ (called by your Go code with pgxpool)
-[Supabase PostgreSQL Database]
+internal/views/*.templ ────( templ generate )────▶ internal/views/*_templ.go
 ```
 
-### 7.2 The Configuration: `sqlc.yaml`
+Key benefits:
+- **Compile-time safety**: Type errors in templates fail at build time, not in production.
+- **Composable components**: Components render child content using `{ children... }`.
+- **Zero runtime reflection**: Fast rendering directly to an `http.ResponseWriter`.
 
-In your project root, `sqlc.yaml` tells `sqlc` where your database schema and query files live, and what Go code to output:
+---
 
-```yaml
-version: "2"
-sql:
-  - schema: "supabase/migrations"
-    queries: "db/queries"
-    gen:
-      go:
-        package: "db"
-        out: "internal/db"
-        sql_package: "pgx/v5"
-```
+### 7.2 Authored View Components (`internal/views/`)
 
-- `schema`: Points to your DDL directory (`supabase/migrations`). `sqlc` reads all `.sql` migration files in alphabetical order (`0001_...`, `0002_...`) so you don't need to change `sqlc.yaml` for new migrations.
-- `queries`: Directory containing your raw SQL files (`.sql`).
-- `package: "db"`: All generated Go files will start with `package db`.
-- `out: "internal/db"`: Directory where generated Go code will be placed. In Go, code in `internal/` is private to this module and cannot be imported by external packages.
-- `sql_package: "pgx/v5"`: Tells `sqlc` to generate code using `github.com/jackc/pgx/v5`.
+The following view components have been authored by your assistant and compiled:
 
-### 7.3 Writing Queries: `db/queries/`
+1. **`layout.templ`**: Base layout containing the HTML5 boilerplate, Tailwind CDN, HTMX, navigation header with motorsport branding, and footer.
+2. **`home.templ`**: Race weekend calendar grouped by month, series filter tabs (`All`, `F1`, `MotoGP`), `.ics` calendar sync buttons, and event cards with status badges.
+3. **`event_detail.templ`**: Detailed Grand Prix view with circuit metadata, weekend timetable sessions, and official podium standings.
+4. **`helpers.go`**: Formatters for `pgtype.Timestamptz`, `pgtype.Text`, status badge colors, and generated race summaries.
 
-`sqlc` uses special comments above queries to know what Go function signature to generate:
+---
 
-| sqlc Annotation | Go Return Type | When to use |
-|---|---|---|
-| `-- name: GetItem :one` | `(Item, error)` | Exactly one row expected (e.g. `WHERE id = $1`). Returns `pgx.ErrNoRows` if not found. |
-| `-- name: ListItems :many` | `([]Item, error)` | Zero or more rows expected (e.g. `SELECT * FROM items`). |
-| `-- name: DeleteItem :exec` | `error` | No rows returned (e.g. `DELETE` or `UPDATE`). |
-| `-- name: DeleteItem :execrows` | `(int64, error)` | Returns number of affected rows. |
+### 7.3 Next Action (Backend Integration): Wiring Handlers (`internal/web/handler.go`)
 
-#### Query Files Overview
+Per the **Contract-First** Dual-Role Split, you (the backend developer) connect the database queries to the Templ components in `internal/web/handler.go`.
 
-1. **`db/queries/series.sql`**: Lookup queries for championship series:
-   ```sql
-   -- name: ListSeries :many
-   SELECT series_id, series_name, series_slug
-   FROM series
-   ORDER BY series_id;
+Every Templ component implements `templ.Component`, providing a `.Render(ctx, w)` method.
 
-   -- name: GetSeriesBySlug :one
-   SELECT series_id, series_name, series_slug
-   FROM series
-   WHERE series_slug = $1;
-   ```
-
-2. **`db/queries/events.sql`**: Calendar and weekend details:
-   - `ListEventsBySeason`: Gets calendar events for a series and year.
-   - `GetUpcomingEvents`: Finds next races for countdown and archive window.
-   - `GetEventBySlug`: Detailed Grand Prix page.
-   - `ListSessionsByEvent`: Timetable for FP1, Quali, Sprint, Race.
-   - `UpsertEvent`: Ingestion query to insert or update event details.
-
-3. **`db/queries/results.sql`**: Podium finishes:
-   - `GetPodiumByEventAndSession`: Returns positions 1–3 joined with driver name/code and team name/color.
-   - `UpsertResult`: Ingestion query with strict top-3 position constraint.
-
-4. **`db/queries/sync.sql`**: Entities and audit logging:
-   - `UpsertCircuit`, `UpsertTeam`, `UpsertDriver`: Foreign key parents.
-   - `CreateSyncRun`, `CompleteSyncRun`: Refresh job logging.
-
-### 7.4 Running `sqlc generate`
-
-Once your `sqlc.yaml` and query files in `db/queries/` are ready, run:
-
-```bash
-sqlc generate
-```
-
-`sqlc` parses your schema and queries and generates the following inside `internal/db/`:
-- **`models.go`**: Go structs matching your database tables (`Series`, `Circuit`, `Team`, `Driver`, `Event`, `Session`, `Result`, `SyncRun`).
-- **`db.go`**: Contains the `DBTX` interface and `Queries` struct constructor `New(db DBTX) *Queries`.
-- **`*.sql.go`**: Typed Go methods (e.g., `queries.ListEventsBySeason(ctx, arg)`).
-
-### 7.5 Installing `pgx/v5` Dependency
-
-Add the PostgreSQL driver to your Go module:
-
-```bash
-go get github.com/jackc/pgx/v5
-go mod tidy
-```
-
-This updates `go.mod` and generates `go.sum` with verified checksums.
-
-### 7.6 Writing the Connection Pool Helper: `internal/db/conn.go`
-
-In a web application, opening a new database connection for each request is inefficient (handshake overhead). Instead, we use a **connection pool** (`pgxpool.Pool`) which manages a set of reusable connections.
-
-Create `internal/db/conn.go`:
+#### 1. Wiring `handleHome`:
+Replace the plain-text output in `handleHome` with:
 
 ```go
-package db
-
-import (
-	"context"
-	"fmt"
-
-	"github.com/jackc/pgx/v5/pgxpool"
-)
-
-// NewPool initializes and tests a PostgreSQL connection pool.
-func NewPool(ctx context.Context, connString string) (*pgxpool.Pool, error) {
-	cfg, err := pgxpool.ParseConfig(connString)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse connection config: %w", err)
-	}
-
-	pool, err := pgxpool.NewWithConfig(ctx, cfg)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create connection pool: %w", err)
-	}
-
-	// Verify connection immediately with a ping
-	if err := pool.Ping(ctx); err != nil {
-		pool.Close()
-		return nil, fmt.Errorf("failed to ping database: %w", err)
-	}
-
-	return pool, nil
-}
-```
-
-#### Go Concepts Explained in `conn.go`:
-- **`context.Context`**: Go's standard mechanism for deadlines, timeouts, and cancellation. Every database call in Go accepts a context.
-- **Error Wrapping (`%w`)**: `fmt.Errorf("...: %w", err)` wraps the underlying error, preserving error inspection via `errors.Is()` or `errors.As()`.
-- **Pointers (`*pgxpool.Pool`)**: The pool is a shared, concurrent-safe reference. Passing a pointer avoids copying the internal state.
-
-### 7.7 Supabase Connection Gotcha (IPv4 vs IPv6 & Session Mode)
-
-> [!WARNING]
-> **Supabase Direct Connection (`:5432` on `db.<ref>.supabase.co`) resolves to IPv6 only.**
-> If your local network or ISP does not have active IPv6 routing, connecting directly will result in `dial tcp ... network is unreachable` or a timeout.
->
-> **Solution**: Use Supabase's **Connection Pooler** (`aws-0-<region>.pooler.supabase.com`), which supports **IPv4**!
->
-> **Important - Choose Session Mode (`:5432`)**:
-> - **Session Mode (Port 5432)**: **Recommended for Go / `pgx`**. Behaves like a direct PostgreSQL connection and supports prepared statements out-of-the-box.
-> - **Transaction Mode (Port 6543)**: Intended for stateless serverless environments (e.g. AWS Lambda). Does not support prepared statements without additional `pgx` configuration (`default_query_exec_mode=exec`).
->
-> Find your connection string in Supabase Dashboard: **Project Settings -> Database -> Connection string -> URI**, then toggle **Mode: Session** (port 5432).
-
-### 7.8 Testing Your DB Layer: `cmd/testdb/main.go`
-
-Create a small CLI program to verify your database connection and test a query:
-
-```go
-package main
-
-import (
-	"bufio"
-	"context"
-	"fmt"
-	"log"
-	"os"
-	"strings"
-
-	"github.com/Nutnoobly/NutzMotosportCalendar/internal/db"
-)
-
-// loadDotEnv reads key=value lines from a local .env file
-func loadDotEnv(filepath string) {
-	file, err := os.Open(filepath)
-	if err != nil {
+// handleHome renders the homepage with race events from Supabase.
+func (s *Server) handleHome(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
 		return
 	}
-	defer file.Close()
 
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
+	seriesFilter := r.URL.Query().Get("series") // "f1", "motogp", or ""
+
+	// Filter from 1 month ago onwards
+	oneMonthAgo := time.Now().AddDate(0, -1, 0)
+	startsAt := pgtype.Timestamptz{Time: oneMonthAgo, Valid: true}
+
+	var events []db.ListUpcomingEventsRow
+	var err error
+
+	if seriesFilter == "f1" || seriesFilter == "motogp" {
+		seriesEvents, qErr := s.queries.ListUpcomingEventsBySeries(r.Context(), db.ListUpcomingEventsBySeriesParams{
+			SerieID:       seriesFilter,
+			EventStartsAt: startsAt,
+		})
+		err = qErr
+		// Map to common ListUpcomingEventsRow slice
+		for _, e := range seriesEvents {
+			events = append(events, db.ListUpcomingEventsRow(e))
 		}
-		parts := strings.SplitN(line, "=", 2)
-		if len(parts) == 2 {
-			k := strings.TrimSpace(parts[0])
-			v := strings.Trim(strings.TrimSpace(parts[1]), "\"'")
-			if os.Getenv(k) == "" {
-				os.Setenv(k, v)
-			}
-		}
-	}
-}
-
-func main() {
-	loadDotEnv(".env")
-
-	dbURL := os.Getenv("DATABASE_URL")
-	if dbURL == "" {
-		log.Fatal("DATABASE_URL environment variable is not set")
+	} else {
+		events, err = s.queries.ListUpcomingEvents(r.Context(), startsAt)
 	}
 
-	ctx := context.Background()
-
-	pool, err := db.NewPool(ctx, dbURL)
 	if err != nil {
-		log.Fatalf("Database connection failed: %v", err)
-	}
-	defer pool.Close()
-
-	fmt.Println("Successfully connected to Supabase PostgreSQL!")
-
-	queries := db.New(pool)
-	seriesList, err := queries.ListSeries(ctx)
-	if err != nil {
-		log.Fatalf("Failed to query series: %v", err)
+		http.Error(w, "Failed to load events", http.StatusInternalServerError)
+		return
 	}
 
-	fmt.Printf("Found %d series in database:\n", len(seriesList))
-	for _, s := range seriesList {
-		fmt.Printf(" - [%s] %s (slug: %s)\n", s.SeriesID, s.SeriesName, s.SeriesSlug)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err := views.Home(seriesFilter, events).Render(r.Context(), w); err != nil {
+		http.Error(w, "Failed to render template", http.StatusInternalServerError)
 	}
 }
 ```
 
-Run the test:
+#### 2. Wiring `handleEventDetail`:
+Replace the plain-text output in `handleEventDetail` with:
+
+```go
+// handleEventDetail renders the event detail page by slug.
+func (s *Server) handleEventDetail(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+	if slug == "" {
+		http.NotFound(w, r)
+		return
+	}
+
+	event, err := s.queries.GetEventBySlug(r.Context(), slug)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	sessions, _ := s.queries.ListSessionsByEventID(r.Context(), event.EventID)
+	results, _ := s.queries.ListResultsByEventID(r.Context(), event.EventID)
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err := views.EventDetail(event, sessions, results).Render(r.Context(), w); err != nil {
+		http.Error(w, "Failed to render template", http.StatusInternalServerError)
+	}
+}
+```
+
+---
+
+### 7.4 Verifying Step 4
+
+1. Start your local server:
+   ```bash
+   go run ./cmd/server/main.go
+   ```
+
+2. Test the web pages in your browser or with curl:
+   - **Calendar Home**: Open `http://localhost:8080/` (or `curl -i http://localhost:8080/`)
+   - **Filtered Calendar**: Open `http://localhost:8080/?series=f1` and `http://localhost:8080/?series=motogp`
+   - **Event Detail**: Open `http://localhost:8080/events/<slug>` (e.g., `http://localhost:8080/events/monza-2026` or whatever slug is seeded in your DB)
+
+3. Verify HTML rendering: Ensure HTML markup renders with Tailwind CSS and responsive layout.
+
+---
+
+### 7.5 Build Workflow
+
+Whenever `.templ` files are modified:
 ```bash
-go run ./cmd/testdb/main.go
+templ generate
+go build ./...
 ```
-
-If you see your series listed (or `Found 0 series in database` if not yet seeded), your database access layer is working!
 
 ---
 
@@ -410,5 +302,5 @@ Don't build these now. Park them here.
 
 1. Re-read the relevant section here.
 2. Check the API docs for whatever's failing (Jolpica, Pulselive, Supabase, pgx, Templ).
-3. Ask your assistant for a review — paste your code or the error.
+3. Ask your assistant for a review — paste your code or the error. For backend Go code, your assistant acts as mentor/reviewer; for frontend (.templ, styles) and DevOps, your assistant implements directly.
 4. Describe the problem out loud; often that surfaces the fix.

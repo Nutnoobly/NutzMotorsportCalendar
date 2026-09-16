@@ -1,0 +1,200 @@
+package views
+
+import (
+	"fmt"
+	"github.com/Nutnoobly/NutzMotosportCalendar/internal/db"
+)
+
+templ Home(activeTab string, events []db.ListUpcomingEventsRow) {
+	@Layout("Home") {
+		<div class="space-y-8">
+			<!-- Hero Section & Countdown Placeholder -->
+			<div class="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 p-6 sm:p-8 shadow-2xl">
+				<div class="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-red-600/10 blur-3xl pointer-events-none"></div>
+				<div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+					<div>
+						<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/20 mb-3">
+							<span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+							Live Hub
+						</div>
+						<h1 class="text-3xl sm:text-4xl font-black tracking-tight text-white">
+							Race Weekend Calendar
+						</h1>
+						<p class="mt-2 text-sm sm:text-base text-slate-400 max-w-xl">
+							Track upcoming Formula 1 and MotoGP Grands Prix, weekend timetables, and official podium results.
+						</p>
+					</div>
+
+					<!-- Countdown Widget Slot (Ready for Step 5) -->
+					if len(events) > 0 {
+						<div id="countdown-container" class="rounded-xl border border-slate-800/80 bg-slate-900/60 p-4 min-w-[280px] text-center backdrop-blur-sm">
+							<span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Next Race</span>
+							<p class="text-base font-bold text-white mt-1 truncate">{ events[0].EventName }</p>
+							<div class="mt-2 flex items-center justify-center gap-2 text-xs font-mono text-amber-400 bg-amber-500/10 py-1.5 px-3 rounded-lg border border-amber-500/20">
+								<span id="countdown-timer" data-utc={ ISOTimestamp(events[0].EventStartsAt) }>
+									{ FormatDateTime(events[0].EventStartsAt) }
+								</span>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+
+			<!-- Filter Tabs & Quick Actions -->
+			<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+				<div class="flex items-center gap-2">
+					<a
+						href="/"
+						class={ "px-4 py-2 rounded-lg text-sm font-semibold transition-all",
+							templ.KV("bg-red-600 text-white shadow-lg shadow-red-600/30", activeTab == "" || activeTab == "all"),
+							templ.KV("bg-slate-900/80 text-slate-400 hover:text-white hover:bg-slate-800", activeTab != "" && activeTab != "all") }
+					>
+						All Series
+					</a>
+					<a
+						href="/?series=f1"
+						class={ "px-4 py-2 rounded-lg text-sm font-semibold transition-all",
+							templ.KV("bg-red-600 text-white shadow-lg shadow-red-600/30", activeTab == "f1"),
+							templ.KV("bg-slate-900/80 text-slate-400 hover:text-white hover:bg-slate-800", activeTab != "f1") }
+					>
+						🏎️ Formula 1
+					</a>
+					<a
+						href="/?series=motogp"
+						class={ "px-4 py-2 rounded-lg text-sm font-semibold transition-all",
+							templ.KV("bg-sky-600 text-white shadow-lg shadow-sky-600/30", activeTab == "motogp"),
+							templ.KV("bg-slate-900/80 text-slate-400 hover:text-white hover:bg-slate-800", activeTab != "motogp") }
+					>
+						🏍️ MotoGP
+					</a>
+				</div>
+
+				<!-- Calendar Sync Button -->
+				<div class="flex items-center gap-2">
+					if activeTab == "f1" {
+						<a
+							href="/series/f1/calendar.ics"
+							download="f1-calendar.ics"
+							class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-slate-300 border border-slate-800 hover:border-slate-700 hover:text-white transition-colors"
+						>
+							📅 Export F1 .ics
+						</a>
+					} else if activeTab == "motogp" {
+						<a
+							href="/series/motogp/calendar.ics"
+							download="motogp-calendar.ics"
+							class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-slate-300 border border-slate-800 hover:border-slate-700 hover:text-white transition-colors"
+						>
+							📅 Export MotoGP .ics
+						</a>
+					} else {
+						<div class="flex items-center gap-1.5">
+							<a
+								href="/series/f1/calendar.ics"
+								class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-slate-300 border border-slate-800 hover:border-slate-700 hover:text-white transition-colors"
+							>
+								F1 .ics
+							</a>
+							<a
+								href="/series/motogp/calendar.ics"
+								class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-slate-300 border border-slate-800 hover:border-slate-700 hover:text-white transition-colors"
+							>
+								MotoGP .ics
+							</a>
+						</div>
+					}
+				</div>
+			</div>
+
+			<!-- Race Calendar List -->
+			if len(events) == 0 {
+				<div class="rounded-2xl border border-dashed border-slate-800 p-12 text-center">
+					<div class="text-4xl mb-3">🏁</div>
+					<h3 class="text-lg font-bold text-white">No upcoming events scheduled</h3>
+					<p class="text-sm text-slate-400 mt-1 max-w-md mx-auto">
+						The current season calendar has concluded or upcoming events are awaiting upstream data sync.
+					</p>
+				</div>
+			} else {
+				<div class="space-y-4">
+					for i, ev := range events {
+						if i == 0 || FormatMonthYear(ev.EventStartsAt) != FormatMonthYear(events[i-1].EventStartsAt) {
+							<div class="pt-4 pb-2">
+								<h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+									<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+									{ FormatMonthYear(ev.EventStartsAt) }
+								</h2>
+							</div>
+						}
+						@EventCard(ev)
+					}
+				</div>
+			}
+		</div>
+	}
+}
+
+templ EventCard(ev db.ListUpcomingEventsRow) {
+	<div class={ "group relative rounded-xl border border-slate-800/80 bg-slate-900/40 p-5 transition-all duration-200 hover:border-slate-700 hover:bg-slate-900/80 hover:shadow-xl",
+		templ.KV("opacity-60", ev.EventStatus == "canceled" || ev.EventStatus == "cancelled") }>
+		<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+			<!-- Event Info -->
+			<div class="space-y-1.5">
+				<div class="flex items-center gap-2.5 flex-wrap">
+					<!-- Series Badge -->
+					<span class={ "px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider", SeriesBadgeClass(ev.SerieID) }>
+						{ ev.SerieID }
+					</span>
+
+					<!-- Round Number -->
+					<span class="text-xs font-semibold text-slate-400">
+						Round { fmt.Sprintf("%d", ev.EventRound) }
+					</span>
+
+					<!-- Status Badge -->
+					<span class={ "px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider", StatusBadgeClass(ev.EventStatus) }>
+						{ ev.EventStatus }
+					</span>
+				</div>
+
+				<!-- Event Name -->
+				<h3 class="text-lg font-bold text-white group-hover:text-red-400 transition-colors">
+					<a href={ templ.SafeURL("/events/" + ev.EventSlug) } class="focus:outline-none">
+						<span class="absolute inset-0" aria-hidden="true"></span>
+						{ ev.EventName }
+					</a>
+				</h3>
+
+				<!-- Circuit and Country -->
+				<p class="text-xs sm:text-sm text-slate-400 flex items-center gap-1.5">
+					<span>📍</span>
+					<span>{ ev.CircuitName }</span>
+					if TextString(ev.CircuitLocality, "") != "" {
+						<span class="text-slate-500">•</span>
+						<span>{ TextString(ev.CircuitLocality, "") }</span>
+					}
+					if TextString(ev.CircuitCountry, "") != "" {
+						<span class="text-slate-500">•</span>
+						<span class="font-medium text-slate-300">{ TextString(ev.CircuitCountry, "") }</span>
+					}
+				</p>
+			</div>
+
+			<!-- Date & Action -->
+			<div class="flex sm:flex-col sm:items-end justify-between items-center shrink-0 pt-2 sm:pt-0 border-t border-slate-800/60 sm:border-0">
+				<div class="text-left sm:text-right">
+					<div class="text-sm font-bold text-white font-mono">
+						{ FormatDate(ev.EventStartsAt) }
+					</div>
+					<div class="text-xs text-slate-400" data-utc={ ISOTimestamp(ev.EventStartsAt) }>
+						{ FormatTimeUTC(ev.EventStartsAt) }
+					</div>
+				</div>
+
+				<span class="mt-2 text-xs font-medium text-red-400 group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
+					Details <span>&rarr;</span>
+				</span>
+			</div>
+		</div>
+	</div>
+}

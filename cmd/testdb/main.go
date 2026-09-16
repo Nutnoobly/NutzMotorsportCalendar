@@ -33,6 +33,9 @@ func loadDotEnv(filepath string) {
 			}
 		}
 	}
+	if err := scanner.Err(); err != nil {
+    	log.Fatal(err)
+	}
 }
 
 func main() {
