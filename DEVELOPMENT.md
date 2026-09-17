@@ -1,360 +1,158 @@
 # Development Guide
 
-This is your working reference for building NutzMotorsportCalendar — written for a first-time
-mini-project. Read it top to bottom once, then jump to sections as you work. It explains the
-*what* and the *why*, not just the how, so you can make your own decisions.
+This is the technical and architectural reference for **NutzMotorsportCalendar**.
 
 > ### Operating Rules: Dual-Role Split
-> - **Backend (`.go`, SQL, DB)**: **You build, Assistant reviews.** You write the backend Go code, router, and queries for your learning and portfolio goals. The assistant reviews and mentors.
-> - **Frontend & DevOps (`.templ`, HTMX, Tailwind, JS, Deploy)**: **Assistant builds.** The assistant authors all UI templates, styles, client scripts, and deployment configurations.
-> - **Interface Protocol**: **Contract-First.** You define the Go handler signatures and view-model structs; the assistant writes the matching Templ components.
+> - **Backend (`.go`, SQL, DB)**: **User builds, Assistant reviews.** The user authors backend Go code, routers, queries, and migrations for learning and portfolio purposes. The assistant reviews and mentors.
+> - **Frontend & DevOps (`.templ`, HTMX, Tailwind, JS, Deploy)**: **Assistant builds.** The assistant authors all UI templates, styles, client scripts, container configs, and deployment pipelines.
+> - **Interface Protocol**: **Contract-First.** The user defines Go handler signatures and view-model structs; the assistant writes the matching Templ components.
 
 ---
 
-## 1. Big Picture
+## 1. System Architecture
 
-A website shows an F1 + MotoGP race calendar + results.
+A lightweight, mobile-first motorsport calendar and results hub for **Formula 1** and **MotoGP**.
 
-Data comes from external APIs. You **do not** fetch from those APIs on every page view (slow,
-rate-limited, fragile). Instead:
-
-1. A background job periodically pulls data from the upstream APIs **into your own database**.
-2. Your website reads from **your database**, which you fully control.
+External APIs are never queried during client page requests. Synchronization happens out-of-band:
 
 ```
-Upstream API → [cron job] → Your Supabase DB → [Go server] → Visitor browser
-```
-
-This is a classic pattern: **own your data, don't proxy someone else's.**
-
----
-
-## 2. Tech Stack — Why Each Piece
-
-| Tool | Why you chose it |
-|------|------------------|
-| Go `net/http` | The backend engine. No framework needed — Go's standard library is enough. |
-| Supabase (Postgres) | Your database, hosted for you. You write raw SQL. |
-| `sqlc` + `pgx` | Write SQL once; sqlc generates type-safe Go so DB errors surface at compile time. |
-| Templ | Type-safe HTML components compiled to Go. No messy string templates. |
-| HTMX | Add interactivity (tabs, swapping) with a small HTML attribute, not heavy JS. |
-| Tailwind CSS | Utility classes for styling, makes responsive design easy. |
-| Render | Free cloud hosting for your containerized Go binary so the site is public. |
-
----
-
-## 3. Database Design (the core)
-
-The complete schema specification, ERD, and UML class diagrams are located in [`DATABASE.md`](file:///home/nutnoobly/User/Code/Project/NutzMotorsportCalendar/DATABASE.md).
-
-### 3.1 The eight tables
-
-```
-series       -- 'f1', 'motogp' lookup
-circuits     -- normalized track venues (Monza, Silverstone, etc.)
-teams        -- constructors per series (Ferrari, Red Bull, Ducati, etc.)
-drivers      -- racers with permanent numbers, timing codes, and current team FK
-events       -- Grand Prix weekends (season, round, circuit FK, status, slug)
-sessions     -- full weekend timetable (FP1, Quali, Sprint, Main Race)
-results      -- podium top-3 finishes (event FK, session_type, position 1-3, driver FK, team FK)
-sync_runs    -- daily API ingestion audit log
-```
-
-See [`DATABASE.md`](file:///home/nutnoobly/User/Code/Project/NutzMotorsportCalendar/DATABASE.md) for full column definitions, data types, constraints, and Mermaid diagrams.
-
----
-
-
-## 4. Migrations
-
-A **migration** is a SQL file that changes your database schema over time. Your DB evolves:
-
-```
-0001_init.sql   → creates tables
-0002_xxx.sql    → later change
-```
-
-**Why not just run SQL once?** Because as the project grows you make changes. Migrations are
-a log of changes. Each is applied in order, exactly once.
-
-**Key design**: run each migration inside a **transaction** (all-or-nothing). If a migration
-fails halfway, the whole thing rolls back and your DB is unchanged — no half-applied state.
-
-**Bookkeeping**: track which files already ran in a `schema_migrations` table. A migration
-runner:
-
-1. Reads all `*.sql` files sorted by name.
-2. Checks `schema_migrations` for ones already applied → skips them.
-3. Applies each new one in a transaction, records it.
-
-**pgx gotcha that WILL bite you**: pgx by default uses the "extended query protocol", which
-rejects a single string containing multiple statements. Migration files have many statements.
-Fix: set `QueryExecModeSimpleProtocol` on the connection (or split statements yourself).
-
----
-
-## 5. Data Sources
-
-Two upstream APIs. You call these **only** from your refresh job, not from visitors' requests.
-
-### 5.1 F1 — Jolpica (`api.jolpi.ca`)
-
-- Endpoints: `/ergast/f1/current.json` (schedule) and `/ergast/f1/current/results.json` (results).
-- Returns JSON nestings: each race has `date`, `time`, plus FirstPractice/SecondPractice/
-  Qualifying/Sprint sub-objects → those map to your `sessions` table.
-- Rate limit ~200 requests/hr unauthenticated — plenty for a daily cron.
-
-### 5.2 MotoGP — Dorna Pulselive (`api.pulselive.motogp.com`)
-
-- Less documented and messier. Set a **User-Agent** header (some APIs reject empty ones).
-- **Defensive parsing is mandatory here**: fields can be `null` or missing. Never assume a
-  field exists — check before using it.
-
-### 5.3 Defensive programming rule
-
-External APIs change without warning. Every piece of data you read should be treated as
-"maybe absent, maybe the wrong type." When in doubt, log and skip, don't crash the whole refresh.
-
----
-
-## 6. Build Order (do it in this order)
-
-Each step is a small shippable chunk. Don't jump ahead — each builds on the previous.
-
-- [x] **0. Toolchain** — done (Go, templ, sqlc, go.mod).
-- [x] **1. Migrations** — done (schema written in `supabase/migrations/0001_init.sql` and applied in Supabase).
-- [x] **2. sqlc queries & DB layer** — done (`sqlc.yaml`, queries in `db/queries/`, `internal/db/`, `pgxpool`, verified with `cmd/testdb`).
-- [x] **3. HTTP routes [Backend — You build / Assistant reviews]** — done (`net/http` mux: home, event detail, `.ics`, refresh endpoint).
-- [x] **4. Templ views [Frontend — Assistant builds / Contract-first]** — done (views authored, generated, wired to handlers, verified on port 8081).
-- [x] **5. HTMX + countdown [Frontend — Assistant builds]** — done (FIA 5-light gantry, dynamic HTMX tab swapping, countdown ticker).
-- [x] **6. Timezone JS [Frontend — Assistant builds]** — done (client-side auto-detection via Intl API, manual override, dynamic localized formatting on [data-utc]).
-- [x] **7. Refresh fetchers [Backend]** — done (Jolpica F1, Pulselive MotoGP, session timetables, race & sprint podium results, SYNC_RUN logging, cmd/refresh CLI, /admin/refresh handler).
-- [x] **8. Deploy [DevOps — Assistant builds]** — done (multi-stage Dockerfile, render.yaml, GitHub Actions daily cron, verified with container run).
-
----
-
-## 7. Step 7 Guide: Data Fetchers & Upstream Synchronization (Jolpica + Pulselive)
-
-In Step 7, you implement the data ingestion engine that pulls motorsport schedules and results from external APIs into your own Supabase database.
-
-### 7.1 Architecture & The Mental Model
-
-Your web application never calls external APIs during a user page request. Instead, synchronization happens out-of-band:
-
-```
-[ POST /admin/refresh or GitHub Actions Cron ]
-                      │
-                      ▼
-             internal/fetcher
-       ┌──────────────┴──────────────┐
-       ▼                             ▼
-  Jolpica API                   Pulselive API
- (Formula 1)                      (MotoGP)
-       │                             │
-       └──────────────┬──────────────┘
-                      ▼
-               internal/db (sqlc)
-                      ▼
-              Supabase PostgreSQL
-```
-
-#### Recommended Package Layout
-Create an `internal/fetcher/` package:
-- `internal/fetcher/f1.go`: Jolpica Ergast client (schedules, sessions, race results).
-- `internal/fetcher/motogp.go`: Dorna Pulselive client (events, timetables, standings).
-- `internal/fetcher/sync.go`: Orchestrator coordinating series syncs, logging to `SYNC_RUN`.
-
----
-
-### 7.2 F1 Fetcher: Jolpica API (`internal/fetcher/f1.go`)
-
-Jolpica provides a drop-in replacement for the Ergast F1 API.
-
-- **Season Schedule**: `http://api.jolpica.net/ergast/f1/current.json`
-- **Race Results**: `http://api.jolpica.net/ergast/f1/current/{round}/results.json`
-
-#### Parsing F1 Schedule & Sessions
-Each race in Jolpica returns date/time strings in UTC (`YYYY-MM-DD` and `HH:MM:SSZ`).
-
-```go
-type F1ScheduleResponse struct {
-	MRData struct {
-		RaceTable struct {
-			Season string `json:"season"`
-			Races  []struct {
-				Round    string `json:"round"`
-				RaceName string `json:"raceName"`
-				Circuit  struct {
-					CircuitID   string `json:"circuitId"`
-					CircuitName string `json:"circuitName"`
-					Location    struct {
-						Locality string `json:"locality"`
-						Country  string `json:"country"`
-						Lat      string `json:"lat"`
-						Long     string `json:"long"`
-					} `json:"Location"`
-				} `json:"Circuit"`
-				Date          string `json:"date"`
-				Time          string `json:"time"`
-				FirstPractice *struct {
-					Date string `json:"date"`
-					Time string `json:"time"`
-				} `json:"FirstPractice"`
-				Qualifying *struct {
-					Date string `json:"date"`
-					Time string `json:"time"`
-				} `json:"Qualifying"`
-				Sprint *struct {
-					Date string `json:"date"`
-					Time string `json:"time"`
-				} `json:"Sprint"`
-			} `json:"Races"`
-		} `json:"RaceTable"`
-	} `json:"MRData"`
-}
-```
-
-#### Target Database Queries
-1. **Circuit**: `s.queries.UpsertCircuit(ctx, db.UpsertCircuitParams{...})`
-2. **Event**: `s.queries.UpsertEvent(ctx, db.UpsertEventParams{...})`
-3. **Sessions**: `s.queries.DeleteSessionsByEventID(ctx, eventID)` followed by `s.queries.InsertSession(ctx, db.InsertSessionParams{...})` for FP1, Quali, Sprint, and Main Race.
-
----
-
-### 7.3 MotoGP Fetcher: Pulselive API (`internal/fetcher/motogp.go`)
-
-Dorna's Pulselive API powers MotoGP.com.
-
-- **Current Season Events**: `https://api.motogp.pulselive.com/motogp/v1/results/events?seasonYear=2026`
-- **Session Results**: `https://api.motogp.pulselive.com/motogp/v1/results/session/{session_id}/classification`
-
-#### Mandatory Header
-Pulselive requires a custom `User-Agent` header; generic Go HTTP clients without one may receive `403 Forbidden` or connection resets:
-```go
-req.Header.Set("User-Agent", "NutzMotorsportCalendar/1.0")
-```
-
-#### Defensive JSON Handling
-Pulselive often returns `null` or omitted fields for unconfirmed venues or future sessions. Use pointer fields (`*string`, `*int`) in your Go structs to prevent unmarshaling failures.
-
----
-
-### 7.4 Sync Orchestration & Audit Logging (`internal/fetcher/sync.go`)
-
-Track each sync operation in the `SYNC_RUN` table so failures can be audited:
-
-```go
-func SyncSeries(ctx context.Context, queries *db.Queries, serieID string, fetchFn func(context.Context) error) error {
-	// 1. Record sync start
-	syncRun, err := queries.CreateSyncRun(ctx, db.CreateSyncRunParams{
-		SerieID: serieID,
-		Message: pgtype.Text{String: "Sync started", Valid: true},
-	})
-	if err != nil {
-		return fmt.Errorf("failed to create sync run: %w", err)
-	}
-
-	// 2. Execute fetch & upsert
-	syncErr := fetchFn(ctx)
-
-	// 3. Record outcome
-	statusMsg := "Success"
-	if syncErr != nil {
-		statusMsg = syncErr.Error()
-	}
-
-	finishErr := queries.FinishSyncRun(ctx, db.FinishSyncRunParams{
-		SyncID:  syncRun.SyncID,
-		Ok:      syncErr == nil,
-		Message: pgtype.Text{String: statusMsg, Valid: true},
-	})
-	if finishErr != nil {
-		log.Printf("Failed to finish sync run: %v", finishErr)
-	}
-
-	return syncErr
-}
+[ GitHub Actions Daily Cron (04:00 UTC) / Manual POST /admin/refresh ]
+                               │
+                               ▼
+                    internal/fetcher orchestrator
+                    ┌──────────┴──────────┐
+                    ▼                     ▼
+               Jolpica API           Pulselive API
+               (Formula 1)             (MotoGP)
+                    │                     │
+                    └──────────┬──────────┘
+                               ▼
+                    Supabase PostgreSQL (via sqlc)
+                               │
+                               ▼
+               Go HTTP Server (Render Web Service)
+                               │
+                               ▼
+               Visitor Browser (HTMX + Templ + JS)
 ```
 
 ---
 
-### 7.5 Wiring into `handleRefresh` (`internal/web/handler.go`)
+## 2. Tech Stack
 
-Connect your new fetcher to the secret-protected admin route in `internal/web/handler.go`:
-
-```go
-func (s *Server) handleRefresh(w http.ResponseWriter, r *http.Request) {
-	// Launch sync in background goroutine so HTTP request doesn't timeout
-	go func() {
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
-		defer cancel()
-
-		if err := fetcher.SyncAll(ctx, s.queries); err != nil {
-			log.Printf("Refresh error: %v", err)
-		}
-	}()
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusAccepted)
-	fmt.Fprintln(w, `{"status":"ok","message":"Refresh started in background"}`)
-}
-```
+| Layer | Technology | Role |
+| :--- | :--- | :--- |
+| **Backend** | Go `net/http` (1.27) | Standard library HTTP server and middleware. No external router framework. |
+| **Database** | Supabase (PostgreSQL 17) | Cloud Postgres database accessed via Session Mode Pooler (IPv4, port 5432). |
+| **Data Access** | `sqlc` + `pgx/v5` | Type-safe SQL compiler producing idiomatic Go queries. |
+| **Templates** | [Templ](https://templ.guide/) | Component-based, type-safe HTML compiled directly to Go functions. |
+| **Interactivity** | [HTMX](https://htmx.org/) | Server-driven dynamic swaps for tab filtering and lazy loading. |
+| **Styling** | [Tailwind CSS](https://tailwindcss.com/) | Mobile-first responsive styling and typography. |
+| **Client JS** | Vanilla JS | Client-side timezone auto-conversion (`timezone.js`) and ticker HUD (`countdown.js`). |
+| **Hosting** | [Render](https://render.com/) | Containerized web service running on the 100% Free Plan. |
+| **Automation** | GitHub Actions | Daily refresh cron at `04:00 UTC` and automated deployment hooks. |
 
 ---
 
-### 7.6 Standalone Verification CLI (`cmd/refresh/main.go`)
+## 3. Database Design
 
-To test sync logic without starting the full HTTP server, create a small CLI tool:
+The full schema definition, column types, and Mermaid entity-relationship diagrams are documented in [`DATABASE.md`](DATABASE.md).
 
-```bash
-go run ./cmd/refresh/main.go
-```
-
-Or trigger via curl when the server is running:
-```bash
-curl -i -X POST \
-  -H "Authorization: Bearer YOUR_ADMIN_SECRET" \
-  http://localhost:8081/admin/refresh
-```
-
-Verify newly inserted events and sessions in your database using:
-```bash
-go run ./cmd/testdb/main.go
-```
+### Core Tables
+1. `SERIES`: Lookup table (`f1`, `motogp`).
+2. `CIRCUITS`: Normalized venue data (name, country, city, coordinates, slug).
+3. `TEAMS`: Constructor / team entities per series.
+4. `DRIVERS`: Competitors with permanent racing numbers, timing codes, and active team links.
+5. `EVENTS`: Grand Prix weekend rounds per season.
+6. `SESSIONS`: Weekend timetables (Practice, Qualifying, Sprint, Main Race) stored with UTC timestamps.
+7. `RESULTS`: Verified top-3 podium finishes attached to events and session types.
+8. `SYNC_RUN`: Audit trail tracking API synchronization execution, duration, and status.
 
 ---
 
-## 8. Gotchas Cheat Sheet
+## 4. Data Ingestion & Sync Pipeline
 
-Quick list of things that will waste your time if you don't already know them:
+Located in `internal/fetcher/`:
 
-- **`templ generate` before building** — Templ compiles `.templ` to `_templ.go`; forget it
-  and the build breaks.
-- **`pgtype.Text` in Templ** — Use `TextString(t, fallback)` rather than printing `pgtype.Text` directly.
-- **pgx multi-statement** — use `QueryExecModeSimpleProtocol` for migrations.
-- **`TIMESTAMPTZ`, store UTC** — timezone conversion happens in the browser via `static/timezone.js`, not on the server.
-- **Pulselive User-Agent** — Always provide a custom `User-Agent` header for MotoGP requests.
-- **`.ics` output** needs `Content-Type: text/calendar` and UTC `Z` timestamps.
-- **Never commit `.env`** — it holds your DB password. `.gitignore` excludes it.
-- **Archive window** — home page filters to `starts_at > now() - interval '1 month' OR starts_at > now()`.
-
----
-
-## 9. Ideas to Add Later (after v1 works)
-
-Don't build these now. Park them here.
-
-- WEC series (needs a data source)
-- Full results classification pages
-- Driver/team standings
-- User accounts (Supabase Auth is already available)
-- Month-grid calendar view
+- [`internal/fetcher/f1.go`](internal/fetcher/f1.go): Jolpica Ergast client.
+  - Schedule & sessions: `https://api.jolpi.ca/ergast/f1/current.json`
+  - Results: `https://api.jolpi.ca/ergast/f1/current/results.json` and `sprint.json`
+- [`internal/fetcher/motogp.go`](internal/fetcher/motogp.go): Dorna Pulselive client.
+  - Requires custom `User-Agent: NutzMotorsportCalendar/1.0`.
+  - Resolves active season UUID (`/seasons`) and premier class UUID (`/categories`).
+  - Grand Prix events: `https://api.motogp.pulselive.com/motogp/v1/results/events?seasonYear=2026`
+  - Classification: `https://api.motogp.pulselive.com/motogp/v1/results/session/{session_id}/classification`
+- [`internal/fetcher/sync.go`](internal/fetcher/sync.go): Multi-series coordinator with in-memory team/driver deduplication caching and `SYNC_RUN` audit logging.
+- [`cmd/refresh/main.go`](cmd/refresh/main.go): Standalone CLI utility for manual and local out-of-band sync (`go run ./cmd/refresh/main.go`).
+- `POST /admin/refresh`: Secret-guarded endpoint (`Authorization: Bearer <ADMIN_SECRET>`) for remote triggers.
 
 ---
 
-## 10. If You're Stuck
+## 5. Deployment & Infrastructure
 
-1. Re-read the relevant section here.
-2. Check the API docs for whatever's failing (Jolpica, Pulselive, Supabase, pgx, Templ).
-3. Ask your assistant for a review — paste your code or the error. For backend Go code, your assistant acts as mentor/reviewer; for frontend (.templ, styles) and DevOps, your assistant implements directly.
-4. Describe the problem out loud; often that surfaces the fix.
+- **Multi-Stage Docker**: [`Dockerfile`](Dockerfile) builds a static binary with `templ` in Alpine and packages it into a 21.6 MB runtime container running as non-root on port `8081`.
+- **Render Config**: Defined in [`render.yaml`](render.yaml) for automated Blueprint deployment.
+- **Keep-Alive & Sync**: Supabase free-tier pauses databases after 7 days of inactivity. The daily GitHub Actions cron (`.github/workflows/refresh-cron.yml`) hits `/admin/refresh` at `04:00 UTC`, keeping the database active and data up to date.
+
+---
+
+## 6. Gotchas & Engineering Tips
+
+1. **`templ generate` First**: Always run `templ generate` before `go build` or `go test` whenever `.templ` files change.
+2. **UTC Timestamps in DB**: Always store session and event timestamps as UTC `TIMESTAMPTZ`. Client-side formatting and timezone shifts are handled dynamically in the user's browser by `static/timezone.js`.
+3. **Supabase Connection Modes**: Use the **IPv4 Session Mode Pooler** (port `5432`) for `pgxpool`. Do not use Transaction Mode (port `6543`) with `sqlc` prepared queries.
+4. **Pulselive User-Agent**: MotoGP Pulselive API returns `403 Forbidden` if the `User-Agent` header is absent or uses default Go HTTP client strings.
+5. **Archive Window Query**: The homepage displays current season events where `event_date_end >= NOW() - INTERVAL '1 month'` to keep recent race results visible while hiding older past rounds.
+
+---
+
+## 7. Future Roadmap & Enhancement Milestones
+
+### 7.1 Driver & Constructor Standings
+* **Motivation**: Give visitors a complete championship picture without leaving the calendar.
+* **Data Sources**:
+  - **F1**: Jolpica Ergast endpoints `/ergast/f1/{season}/driverStandings.json` and `/ergast/f1/{season}/constructorStandings.json`.
+  - **MotoGP**: Dorna Pulselive standings endpoint or computed dynamically from classified finishes.
+* **Backend & Database**:
+  - Add `STANDINGS` table tracking `(serie_id, season, entity_type, entity_id, position, points, wins, updated_at)`.
+  - Alternatively, compute championship points on-the-fly from historical `RESULTS` via a SQL view.
+  - Add `GetDriverStandings(serie_id, season)` and `GetTeamStandings(serie_id, season)` queries to `db/queries/`.
+* **Frontend & UI**:
+  - Standings tab in navigation and homepage sub-view (swappable via HTMX).
+  - Responsive leaderboard table showing rank changes, team color badges, driver numbers, and point gaps.
+
+### 7.2 Full Race Classifications (Beyond Top 3)
+* **Current State**: Stores and displays only P1, P2, and P3 podium finishers.
+* **Expansion**:
+  - Relax position constraints in `RESULTS` table to store all classified positions (P1–P20+), DNFs, DSQs, and fastest laps.
+  - Add dedicated Grand Prix results breakdown page under `/events/{slug}/results`.
+  - Display gap to leader, pit stop counts, and points earned per driver.
+
+### 7.3 Month-Grid Calendar View
+* **Current State**: Chronological vertical card list grouped by month.
+* **Expansion**:
+  - Add view switcher toggle (List View vs. Calendar Grid View) in header.
+  - Traditional 7-column month grid highlighting race weekends with series badge indicators (Red for F1, Teal for MotoGP).
+  - Interactive popover or drawer previewing session timetables when clicking a race date.
+
+### 7.4 Live Calendar Subscriptions (WebCal / CalDAV)
+* **Current State**: Static `.ics` download for individual series.
+* **Expansion**:
+  - Provide dynamic live subscription feed URLs (`webcal://<domain>/calendar/f1.ics`).
+  - Allow users to customize subscription filters: Main Races only, Qualifying + Races, or Full Weekend (including Free Practice).
+  - Include reminder alarms (`VALARM` 30 minutes before session start) in generated iCalendar payloads.
+
+### 7.5 Circuit Weather & Telemetry HUD
+* **Motivation**: Enhance event detail pages with real-time conditions.
+* **Implementation**:
+  - Integrate [Open-Meteo](https://open-meteo.com/) free weather API using circuit latitude and longitude coordinates already stored in `CIRCUITS`.
+  - Display weekend track temperature, rain probability, wind speed, and weather icons on event detail pages.
+
+### 7.6 Series Expansion (WEC, IndyCar, Formula E)
+* **WEC (World Endurance Championship)**: Multi-class endurance calendar (Hypercar, LMGT3) with 6h/8h/24h race formats.
+* **IndyCar**: North American open-wheel schedule and Indy 500 session breakdown.
+* **Architecture**: Extend `SERIES` table and implement dedicated fetcher clients adhering to `fetcher.SeriesFetcher` interface.
+
+### 7.7 User Preferences & Race Alerts
+* **Local-First Preferences**: Store series filter preferences and favorite drivers in browser `localStorage`.
+* **Browser Push Notifications**: Web Push API notifications for upcoming sessions based on client-configured reminders.
