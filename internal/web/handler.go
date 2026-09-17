@@ -1,11 +1,14 @@
 package web
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/db"
+	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/fetcher"
 	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/views"
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -13,7 +16,7 @@ import (
 // handleHome renders the homepage with race events from Supabase.
 func (s *Server) handleHome(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-	http.NotFound(w, r)
+		http.NotFound(w, r)
 		return
 	}
 
@@ -46,6 +49,13 @@ func (s *Server) handleHome(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if r.Header.Get("HX-Request") == "true" {
+		if err := views.EventsSection(seriesFilter, events).Render(r.Context(), w); err != nil {
+			http.Error(w, "Failed to render partial", http.StatusInternalServerError)
+		}
+		return
+	}
+
 	if err := views.Home(seriesFilter, events).Render(r.Context(), w); err != nil {
 		http.Error(w, "Failed to render template", http.StatusInternalServerError)
 	}
@@ -89,7 +99,33 @@ func (s *Server) handleICS(w http.ResponseWriter, r *http.Request) {
 
 // handleRefresh triggers upstream API sync (protected by secret auth).
 func (s *Server) handleRefresh(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Query().Get("sync") == "true" {
+		ctx, cancel := context.WithTimeout(r.Context(), 3*time.Minute)
+		defer cancel()
+
+		if err := fetcher.SyncAll(ctx, s.queries); err != nil {
+			log.Printf("Refresh error: %v", err)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, `{"status":"error","message":%q}`+"\n", err.Error())
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, `{"status":"ok","message":"Refresh completed successfully"}`)
+		return
+	}
+
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
+		defer cancel()
+
+		if err := fetcher.SyncAll(ctx, s.queries); err != nil {
+			log.Printf("Refresh error: %v", err)
+		}
+	}()
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintln(w, `{"status":"ok","message":"Refresh queued"}`)
+	w.WriteHeader(http.StatusAccepted)
+	fmt.Fprintln(w, `{"status":"ok","message":"Refresh started in background"}`)
 }

@@ -107,3 +107,14 @@ ON CONFLICT (event_id, session_type, result_position) DO UPDATE SET
     team_id = EXCLUDED.team_id,
     result_time_or_gap = EXCLUDED.result_time_or_gap,
     result_points = EXCLUDED.result_points;
+
+-- name: GetEventBySeasonRound :one
+SELECT event_id, serie_id, circuit_id, event_season, event_round, event_slug, event_name, event_starts_at, event_status
+FROM EVENTS
+WHERE serie_id = $1 AND event_season = $2 AND event_round = $3;
+
+-- name: GetEventByExternalID :one
+SELECT event_id, serie_id, circuit_id, event_season, event_round, event_slug, event_name, event_starts_at, event_status
+FROM EVENTS
+WHERE serie_id = $1 AND event_external_id = $2;
+

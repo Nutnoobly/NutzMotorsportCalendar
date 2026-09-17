@@ -1,0 +1,45 @@
+name: Scheduled Data Refresh
+
+on:
+  schedule:
+    # Trigger daily at 04:00 UTC
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for triggering manual refresh"
+        required: false
+        default: "Manual run via GitHub Actions"
+
+jobs:
+  refresh:
+    name: Trigger Admin Refresh
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Refresh Request
+        env:
+          APP_URL: ${{ vars.APP_URL || 'https://nutz-motorsport-calendar.onrender.com' }}
+          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+        run: |
+          if [ -z "$ADMIN_SECRET" ]; then
+            echo "::error::ADMIN_SECRET secret is not set in repository secrets."
+            exit 1
+          fi
+
+          echo "Triggering POST $APP_URL/admin/refresh..."
+          HTTP_STATUS=$(curl -s -o /tmp/response.json -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: Bearer $ADMIN_SECRET" \
+            -H "Content-Type: application/json" \
+            "$APP_URL/admin/refresh")
+
+          echo "HTTP Response Status: $HTTP_STATUS"
+          echo "Response Body:"
+          cat /tmp/response.json
+
+          if [ "$HTTP_STATUS" -ne 200 ] && [ "$HTTP_STATUS" -ne 202 ]; then
+            echo "::error::Refresh request failed with HTTP status $HTTP_STATUS"
+            exit 1
+          fi
+
+          echo "Refresh endpoint responded successfully."

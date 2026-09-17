@@ -112,6 +112,87 @@ func (q *Queries) GetDriverByExternalID(ctx context.Context, arg GetDriverByExte
 	return i, err
 }
 
+const getEventByExternalID = `-- name: GetEventByExternalID :one
+SELECT event_id, serie_id, circuit_id, event_season, event_round, event_slug, event_name, event_starts_at, event_status
+FROM EVENTS
+WHERE serie_id = $1 AND event_external_id = $2
+`
+
+type GetEventByExternalIDParams struct {
+	SerieID         string      `json:"serie_id"`
+	EventExternalID pgtype.Text `json:"event_external_id"`
+}
+
+type GetEventByExternalIDRow struct {
+	EventID       int32              `json:"event_id"`
+	SerieID       string             `json:"serie_id"`
+	CircuitID     int32              `json:"circuit_id"`
+	EventSeason   int32              `json:"event_season"`
+	EventRound    int32              `json:"event_round"`
+	EventSlug     string             `json:"event_slug"`
+	EventName     string             `json:"event_name"`
+	EventStartsAt pgtype.Timestamptz `json:"event_starts_at"`
+	EventStatus   string             `json:"event_status"`
+}
+
+func (q *Queries) GetEventByExternalID(ctx context.Context, arg GetEventByExternalIDParams) (GetEventByExternalIDRow, error) {
+	row := q.db.QueryRow(ctx, getEventByExternalID, arg.SerieID, arg.EventExternalID)
+	var i GetEventByExternalIDRow
+	err := row.Scan(
+		&i.EventID,
+		&i.SerieID,
+		&i.CircuitID,
+		&i.EventSeason,
+		&i.EventRound,
+		&i.EventSlug,
+		&i.EventName,
+		&i.EventStartsAt,
+		&i.EventStatus,
+	)
+	return i, err
+}
+
+const getEventBySeasonRound = `-- name: GetEventBySeasonRound :one
+SELECT event_id, serie_id, circuit_id, event_season, event_round, event_slug, event_name, event_starts_at, event_status
+FROM EVENTS
+WHERE serie_id = $1 AND event_season = $2 AND event_round = $3
+`
+
+type GetEventBySeasonRoundParams struct {
+	SerieID     string `json:"serie_id"`
+	EventSeason int32  `json:"event_season"`
+	EventRound  int32  `json:"event_round"`
+}
+
+type GetEventBySeasonRoundRow struct {
+	EventID       int32              `json:"event_id"`
+	SerieID       string             `json:"serie_id"`
+	CircuitID     int32              `json:"circuit_id"`
+	EventSeason   int32              `json:"event_season"`
+	EventRound    int32              `json:"event_round"`
+	EventSlug     string             `json:"event_slug"`
+	EventName     string             `json:"event_name"`
+	EventStartsAt pgtype.Timestamptz `json:"event_starts_at"`
+	EventStatus   string             `json:"event_status"`
+}
+
+func (q *Queries) GetEventBySeasonRound(ctx context.Context, arg GetEventBySeasonRoundParams) (GetEventBySeasonRoundRow, error) {
+	row := q.db.QueryRow(ctx, getEventBySeasonRound, arg.SerieID, arg.EventSeason, arg.EventRound)
+	var i GetEventBySeasonRoundRow
+	err := row.Scan(
+		&i.EventID,
+		&i.SerieID,
+		&i.CircuitID,
+		&i.EventSeason,
+		&i.EventRound,
+		&i.EventSlug,
+		&i.EventName,
+		&i.EventStartsAt,
+		&i.EventStatus,
+	)
+	return i, err
+}
+
 const getLastSyncRunBySeries = `-- name: GetLastSyncRunBySeries :one
 SELECT sync_id, serie_id, started_at, finished_at, ok, message
 FROM SYNC_RUN

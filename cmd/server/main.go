@@ -47,7 +47,7 @@ func loadDotEnv(filepath string) {
 func main() {
 	loadDotEnv(".env")
 
-	dbURL := os.Getenv("DATABASE_URL")
+	dbURL := strings.Trim(strings.TrimSpace(os.Getenv("DATABASE_URL")), "\"'")
 	if dbURL == "" {
 		log.Fatal("DATABASE_URL environment variable is required")
 	}
@@ -57,7 +57,7 @@ func main() {
 		port = "8081"
 	}
 
-	adminSecret := os.Getenv("ADMIN_SECRET")
+	adminSecret := strings.Trim(strings.TrimSpace(os.Getenv("ADMIN_SECRET")), "\"'")
 
 	// 1. Root context cancelled on SIGINT (Ctrl+C) or SIGTERM
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

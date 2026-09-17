@@ -39,7 +39,7 @@ This is a classic pattern: **own your data, don't proxy someone else's.**
 | Templ | Type-safe HTML components compiled to Go. No messy string templates. |
 | HTMX | Add interactivity (tabs, swapping) with a small HTML attribute, not heavy JS. |
 | Tailwind CSS | Utility classes for styling, makes responsive design easy. |
-| Fly.io | Hosts your Go binary so the site is public. |
+| Render | Free cloud hosting for your containerized Go binary so the site is public. |
 
 ---
 
@@ -125,148 +125,201 @@ Each step is a small shippable chunk. Don't jump ahead — each builds on the pr
 - [x] **1. Migrations** — done (schema written in `supabase/migrations/0001_init.sql` and applied in Supabase).
 - [x] **2. sqlc queries & DB layer** — done (`sqlc.yaml`, queries in `db/queries/`, `internal/db/`, `pgxpool`, verified with `cmd/testdb`).
 - [x] **3. HTTP routes [Backend — You build / Assistant reviews]** — done (`net/http` mux: home, event detail, `.ics`, refresh endpoint).
-- [ ] **4. Templ views [Frontend — Assistant builds / Contract-first]** — layout, home, event pages; `templ generate` after each edit.
-- [ ] **5. HTMX + countdown [Frontend — Assistant builds]** — filter tabs swap sections; countdown JS ticks each second.
-- [ ] **6. Timezone JS [Frontend — Assistant builds]** — render UTC, convert to visitor's zone client-side.
-- [ ] **7. Refresh fetchers [Backend — You build / Assistant reviews]** — Jolpica + Pulselive, upsert into DB.
-- [ ] **8. Deploy [DevOps — Assistant builds]** — Dockerfile, Fly.io, GitHub Actions daily cron.
+- [x] **4. Templ views [Frontend — Assistant builds / Contract-first]** — done (views authored, generated, wired to handlers, verified on port 8081).
+- [x] **5. HTMX + countdown [Frontend — Assistant builds]** — done (FIA 5-light gantry, dynamic HTMX tab swapping, countdown ticker).
+- [x] **6. Timezone JS [Frontend — Assistant builds]** — done (client-side auto-detection via Intl API, manual override, dynamic localized formatting on [data-utc]).
+- [x] **7. Refresh fetchers [Backend]** — done (Jolpica F1, Pulselive MotoGP, session timetables, race & sprint podium results, SYNC_RUN logging, cmd/refresh CLI, /admin/refresh handler).
+- [x] **8. Deploy [DevOps — Assistant builds]** — done (multi-stage Dockerfile, render.yaml, GitHub Actions daily cron, verified with container run).
 
 ---
 
-## 7. Step 4 Guide: Templ Views & Backend Handler Integration
+## 7. Step 7 Guide: Data Fetchers & Upstream Synchronization (Jolpica + Pulselive)
 
-In Step 4, we replace the plain-text responses in our HTTP handlers with type-safe HTML components built with **Templ** and styled with **Tailwind CSS**.
+In Step 7, you implement the data ingestion engine that pulls motorsport schedules and results from external APIs into your own Supabase database.
 
-### 7.1 The Mental Model: What is Templ?
+### 7.1 Architecture & The Mental Model
 
-Templ is a component-based templating language for Go. Unlike standard `html/template` (which parses strings at runtime and can fail unexpectedly), Templ templates are **compiled directly into Go code**:
+Your web application never calls external APIs during a user page request. Instead, synchronization happens out-of-band:
 
 ```
-internal/views/*.templ ────( templ generate )────▶ internal/views/*_templ.go
+[ POST /admin/refresh or GitHub Actions Cron ]
+                      │
+                      ▼
+             internal/fetcher
+       ┌──────────────┴──────────────┐
+       ▼                             ▼
+  Jolpica API                   Pulselive API
+ (Formula 1)                      (MotoGP)
+       │                             │
+       └──────────────┬──────────────┘
+                      ▼
+               internal/db (sqlc)
+                      ▼
+              Supabase PostgreSQL
 ```
 
-Key benefits:
-- **Compile-time safety**: Type errors in templates fail at build time, not in production.
-- **Composable components**: Components render child content using `{ children... }`.
-- **Zero runtime reflection**: Fast rendering directly to an `http.ResponseWriter`.
+#### Recommended Package Layout
+Create an `internal/fetcher/` package:
+- `internal/fetcher/f1.go`: Jolpica Ergast client (schedules, sessions, race results).
+- `internal/fetcher/motogp.go`: Dorna Pulselive client (events, timetables, standings).
+- `internal/fetcher/sync.go`: Orchestrator coordinating series syncs, logging to `SYNC_RUN`.
 
 ---
 
-### 7.2 Authored View Components (`internal/views/`)
+### 7.2 F1 Fetcher: Jolpica API (`internal/fetcher/f1.go`)
 
-The following view components have been authored by your assistant and compiled:
+Jolpica provides a drop-in replacement for the Ergast F1 API.
 
-1. **`layout.templ`**: Base layout containing the HTML5 boilerplate, Tailwind CDN, HTMX, navigation header with motorsport branding, and footer.
-2. **`home.templ`**: Race weekend calendar grouped by month, series filter tabs (`All`, `F1`, `MotoGP`), `.ics` calendar sync buttons, and event cards with status badges.
-3. **`event_detail.templ`**: Detailed Grand Prix view with circuit metadata, weekend timetable sessions, and official podium standings.
-4. **`helpers.go`**: Formatters for `pgtype.Timestamptz`, `pgtype.Text`, status badge colors, and generated race summaries.
+- **Season Schedule**: `http://api.jolpica.net/ergast/f1/current.json`
+- **Race Results**: `http://api.jolpica.net/ergast/f1/current/{round}/results.json`
 
----
-
-### 7.3 Next Action (Backend Integration): Wiring Handlers (`internal/web/handler.go`)
-
-Per the **Contract-First** Dual-Role Split, you (the backend developer) connect the database queries to the Templ components in `internal/web/handler.go`.
-
-Every Templ component implements `templ.Component`, providing a `.Render(ctx, w)` method.
-
-#### 1. Wiring `handleHome`:
-Replace the plain-text output in `handleHome` with:
+#### Parsing F1 Schedule & Sessions
+Each race in Jolpica returns date/time strings in UTC (`YYYY-MM-DD` and `HH:MM:SSZ`).
 
 ```go
-// handleHome renders the homepage with race events from Supabase.
-func (s *Server) handleHome(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
+type F1ScheduleResponse struct {
+	MRData struct {
+		RaceTable struct {
+			Season string `json:"season"`
+			Races  []struct {
+				Round    string `json:"round"`
+				RaceName string `json:"raceName"`
+				Circuit  struct {
+					CircuitID   string `json:"circuitId"`
+					CircuitName string `json:"circuitName"`
+					Location    struct {
+						Locality string `json:"locality"`
+						Country  string `json:"country"`
+						Lat      string `json:"lat"`
+						Long     string `json:"long"`
+					} `json:"Location"`
+				} `json:"Circuit"`
+				Date          string `json:"date"`
+				Time          string `json:"time"`
+				FirstPractice *struct {
+					Date string `json:"date"`
+					Time string `json:"time"`
+				} `json:"FirstPractice"`
+				Qualifying *struct {
+					Date string `json:"date"`
+					Time string `json:"time"`
+				} `json:"Qualifying"`
+				Sprint *struct {
+					Date string `json:"date"`
+					Time string `json:"time"`
+				} `json:"Sprint"`
+			} `json:"Races"`
+		} `json:"RaceTable"`
+	} `json:"MRData"`
+}
+```
+
+#### Target Database Queries
+1. **Circuit**: `s.queries.UpsertCircuit(ctx, db.UpsertCircuitParams{...})`
+2. **Event**: `s.queries.UpsertEvent(ctx, db.UpsertEventParams{...})`
+3. **Sessions**: `s.queries.DeleteSessionsByEventID(ctx, eventID)` followed by `s.queries.InsertSession(ctx, db.InsertSessionParams{...})` for FP1, Quali, Sprint, and Main Race.
+
+---
+
+### 7.3 MotoGP Fetcher: Pulselive API (`internal/fetcher/motogp.go`)
+
+Dorna's Pulselive API powers MotoGP.com.
+
+- **Current Season Events**: `https://api.motogp.pulselive.com/motogp/v1/results/events?seasonYear=2026`
+- **Session Results**: `https://api.motogp.pulselive.com/motogp/v1/results/session/{session_id}/classification`
+
+#### Mandatory Header
+Pulselive requires a custom `User-Agent` header; generic Go HTTP clients without one may receive `403 Forbidden` or connection resets:
+```go
+req.Header.Set("User-Agent", "NutzMotorsportCalendar/1.0")
+```
+
+#### Defensive JSON Handling
+Pulselive often returns `null` or omitted fields for unconfirmed venues or future sessions. Use pointer fields (`*string`, `*int`) in your Go structs to prevent unmarshaling failures.
+
+---
+
+### 7.4 Sync Orchestration & Audit Logging (`internal/fetcher/sync.go`)
+
+Track each sync operation in the `SYNC_RUN` table so failures can be audited:
+
+```go
+func SyncSeries(ctx context.Context, queries *db.Queries, serieID string, fetchFn func(context.Context) error) error {
+	// 1. Record sync start
+	syncRun, err := queries.CreateSyncRun(ctx, db.CreateSyncRunParams{
+		SerieID: serieID,
+		Message: pgtype.Text{String: "Sync started", Valid: true},
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create sync run: %w", err)
 	}
 
-	seriesFilter := r.URL.Query().Get("series") // "f1", "motogp", or ""
+	// 2. Execute fetch & upsert
+	syncErr := fetchFn(ctx)
 
-	// Filter from 1 month ago onwards
-	oneMonthAgo := time.Now().AddDate(0, -1, 0)
-	startsAt := pgtype.Timestamptz{Time: oneMonthAgo, Valid: true}
+	// 3. Record outcome
+	statusMsg := "Success"
+	if syncErr != nil {
+		statusMsg = syncErr.Error()
+	}
 
-	var events []db.ListUpcomingEventsRow
-	var err error
+	finishErr := queries.FinishSyncRun(ctx, db.FinishSyncRunParams{
+		SyncID:  syncRun.SyncID,
+		Ok:      syncErr == nil,
+		Message: pgtype.Text{String: statusMsg, Valid: true},
+	})
+	if finishErr != nil {
+		log.Printf("Failed to finish sync run: %v", finishErr)
+	}
 
-	if seriesFilter == "f1" || seriesFilter == "motogp" {
-		seriesEvents, qErr := s.queries.ListUpcomingEventsBySeries(r.Context(), db.ListUpcomingEventsBySeriesParams{
-			SerieID:       seriesFilter,
-			EventStartsAt: startsAt,
-		})
-		err = qErr
-		// Map to common ListUpcomingEventsRow slice
-		for _, e := range seriesEvents {
-			events = append(events, db.ListUpcomingEventsRow(e))
+	return syncErr
+}
+```
+
+---
+
+### 7.5 Wiring into `handleRefresh` (`internal/web/handler.go`)
+
+Connect your new fetcher to the secret-protected admin route in `internal/web/handler.go`:
+
+```go
+func (s *Server) handleRefresh(w http.ResponseWriter, r *http.Request) {
+	// Launch sync in background goroutine so HTTP request doesn't timeout
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+		defer cancel()
+
+		if err := fetcher.SyncAll(ctx, s.queries); err != nil {
+			log.Printf("Refresh error: %v", err)
 		}
-	} else {
-		events, err = s.queries.ListUpcomingEvents(r.Context(), startsAt)
-	}
+	}()
 
-	if err != nil {
-		http.Error(w, "Failed to load events", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := views.Home(seriesFilter, events).Render(r.Context(), w); err != nil {
-		http.Error(w, "Failed to render template", http.StatusInternalServerError)
-	}
-}
-```
-
-#### 2. Wiring `handleEventDetail`:
-Replace the plain-text output in `handleEventDetail` with:
-
-```go
-// handleEventDetail renders the event detail page by slug.
-func (s *Server) handleEventDetail(w http.ResponseWriter, r *http.Request) {
-	slug := r.PathValue("slug")
-	if slug == "" {
-		http.NotFound(w, r)
-		return
-	}
-
-	event, err := s.queries.GetEventBySlug(r.Context(), slug)
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-
-	sessions, _ := s.queries.ListSessionsByEventID(r.Context(), event.EventID)
-	results, _ := s.queries.ListResultsByEventID(r.Context(), event.EventID)
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := views.EventDetail(event, sessions, results).Render(r.Context(), w); err != nil {
-		http.Error(w, "Failed to render template", http.StatusInternalServerError)
-	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
+	fmt.Fprintln(w, `{"status":"ok","message":"Refresh started in background"}`)
 }
 ```
 
 ---
 
-### 7.4 Verifying Step 4
+### 7.6 Standalone Verification CLI (`cmd/refresh/main.go`)
 
-1. Start your local server:
-   ```bash
-   go run ./cmd/server/main.go
-   ```
+To test sync logic without starting the full HTTP server, create a small CLI tool:
 
-2. Test the web pages in your browser or with curl:
-   - **Calendar Home**: Open `http://localhost:8080/` (or `curl -i http://localhost:8080/`)
-   - **Filtered Calendar**: Open `http://localhost:8080/?series=f1` and `http://localhost:8080/?series=motogp`
-   - **Event Detail**: Open `http://localhost:8080/events/<slug>` (e.g., `http://localhost:8080/events/monza-2026` or whatever slug is seeded in your DB)
-
-3. Verify HTML rendering: Ensure HTML markup renders with Tailwind CSS and responsive layout.
-
----
-
-### 7.5 Build Workflow
-
-Whenever `.templ` files are modified:
 ```bash
-templ generate
-go build ./...
+go run ./cmd/refresh/main.go
+```
+
+Or trigger via curl when the server is running:
+```bash
+curl -i -X POST \
+  -H "Authorization: Bearer YOUR_ADMIN_SECRET" \
+  http://localhost:8081/admin/refresh
+```
+
+Verify newly inserted events and sessions in your database using:
+```bash
+go run ./cmd/testdb/main.go
 ```
 
 ---
@@ -277,12 +330,13 @@ Quick list of things that will waste your time if you don't already know them:
 
 - **`templ generate` before building** — Templ compiles `.templ` to `_templ.go`; forget it
   and the build breaks.
+- **`pgtype.Text` in Templ** — Use `TextString(t, fallback)` rather than printing `pgtype.Text` directly.
 - **pgx multi-statement** — use `QueryExecModeSimpleProtocol` for migrations.
-- **`TIMESTAMPTZ`, store UTC** — timezone conversion happens in the browser, not by hand.
+- **`TIMESTAMPTZ`, store UTC** — timezone conversion happens in the browser via `static/timezone.js`, not on the server.
+- **Pulselive User-Agent** — Always provide a custom `User-Agent` header for MotoGP requests.
 - **`.ics` output** needs `Content-Type: text/calendar` and UTC `Z` timestamps.
 - **Never commit `.env`** — it holds your DB password. `.gitignore` excludes it.
 - **Archive window** — home page filters to `starts_at > now() - interval '1 month' OR starts_at > now()`.
-- **sqlc picks up housekeeping tables too** — you may want to tell it to ignore `sync_runs`/`schema_migrations`.
 
 ---
 

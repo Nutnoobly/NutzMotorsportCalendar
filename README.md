@@ -23,7 +23,7 @@ A small public fan site showing an **F1 + MotoGP** race calendar with auto-fetch
 - **Frontend:** [HTMX](https://htmx.org/) + [Tailwind CSS](https://tailwindcss.com/)
 - **Database:** [Supabase](https://supabase.com/) (PostgreSQL)
 - **Data Access:** [sqlc](https://sqlc.dev/) + [pgx](https://github.com/jackc/pgx)
-- **Hosting:** [Fly.io](https://fly.io/)
+- **Hosting:** [Render](https://render.com/) (Free Tier)
 - **Data Sources:** [Jolpica](https://api.jolpi.ca/) (F1) · [Dorna Pulselive](https://api.pulselive.motogp.com/) (MotoGP)
 
 ## Getting Started
@@ -47,8 +47,9 @@ sqlc generate
 # 5. Verify database connection
 go run ./cmd/testdb/main.go
 
-# 6. Start dev server (coming in Step 3)
-# go run ./cmd/server
+# 6. Start dev server (runs on port 8081)
+go run ./cmd/server/main.go
+# Open http://localhost:8081
 ```
 
 ## Project Structure
@@ -59,16 +60,29 @@ NutzMotorsportCalendar/
 ├── internal/
 │   ├── db/               # Generated database queries & pgxpool helper
 │   ├── refresh/          # Fetchers for F1 and MotoGP APIs
-│   └── web/              # HTTP handlers
+│   ├── views/            # Templ template components
+│   └── web/              # HTTP handlers & middleware
 ├── db/
 │   └── queries/          # Raw SQL query definitions for sqlc
 ├── supabase/
 │   └── migrations/       # Supabase SQL schema migrations
-├── views/                # Templ template components
 ├── static/               # CSS, JS, images
+├── render.yaml           # Render Blueprint configuration
 ├── sqlc.yaml             # sqlc configuration file
 └── .env.example          # Environment variable template
 ```
+
+## Deployment
+
+The application is containerized with Docker and configured for zero-cost hosting on **Render** (Free Tier):
+
+1. Link your GitHub repository in the [Render Dashboard](https://dashboard.render.com/).
+2. Create a new **Blueprint** instance pointing to [`render.yaml`](file:///home/nutnoobly/User/Code/Project/NutzMotorsportCalendar/render.yaml) (or create a Docker Web Service).
+3. Set your environment variables in the Render Dashboard:
+   - `DATABASE_URL`: Supabase connection pooling string (`postgres://...`)
+   - `ADMIN_SECRET`: Custom secret token to authorize `/admin/refresh`
+   - `PORT`: `8081` (preset by `render.yaml`)
+4. Data refresh is scheduled via GitHub Actions (`.github/workflows/refresh-cron.yml`), calling `/admin/refresh` daily at 04:00 UTC.
 
 ## How It Works
 

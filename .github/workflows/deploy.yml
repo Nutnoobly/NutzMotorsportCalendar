@@ -1,0 +1,24 @@
+name: Render Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Render
+    runs-on: ubuntu-latest
+    concurrency: deploy-group
+    steps:
+      - name: Trigger Render Deployment
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -n "$RENDER_DEPLOY_HOOK" ]; then
+            echo "Triggering Render deployment via deploy hook..."
+            curl -s -f -X POST "$RENDER_DEPLOY_HOOK"
+            echo "Deploy hook triggered successfully."
+          else
+            echo "RENDER_DEPLOY_HOOK not configured in secrets. Render auto-deploys via Git push integration."
+          fi

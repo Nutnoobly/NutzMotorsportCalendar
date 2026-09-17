@@ -1,0 +1,12 @@
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+.hermes
+.agents
+.github
+*.md
+supabase
+db/queries
+sqlc.yaml

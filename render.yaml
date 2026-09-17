@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: nutz-motorsport-calendar
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 8081
+      - key: DATABASE_URL
+        sync: false
+      - key: ADMIN_SECRET
+        sync: false

@@ -54,10 +54,10 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 
 					<div class="sm:text-right shrink-0">
 						<div class="text-sm uppercase tracking-wider text-slate-400 font-semibold">Race Weekend</div>
-						<div class="text-lg font-bold text-white font-mono mt-0.5">
+						<div class="text-lg font-bold text-white font-mono mt-0.5" data-utc={ ISOTimestamp(event.EventStartsAt) } data-format="date">
 							{ FormatDate(event.EventStartsAt) }
 						</div>
-						<div class="text-xs text-slate-400" data-utc={ ISOTimestamp(event.EventStartsAt) }>
+						<div class="text-xs text-slate-400 font-mono" data-utc={ ISOTimestamp(event.EventStartsAt) } data-format="time">
 							{ FormatTimeUTC(event.EventStartsAt) }
 						</div>
 					</div>
@@ -98,7 +98,7 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 						<h2 class="text-lg font-bold text-white flex items-center gap-2">
 							<span>⏱️</span> Weekend Timetable
 						</h2>
-						<span class="text-xs text-slate-500 font-mono">Times in UTC</span>
+						<span class="text-xs text-slate-500 font-mono">Times in <span class="tz-abbr">UTC</span></span>
 					</div>
 
 					if len(sessions) == 0 {
@@ -118,10 +118,10 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 										</span>
 									</div>
 									<div class="text-right">
-										<span class="text-xs font-mono font-medium text-slate-300 block">
+										<span class="text-xs font-mono font-medium text-slate-300 block" data-utc={ ISOTimestamp(sess.SessionStartsAt) } data-format="date">
 											{ FormatDate(sess.SessionStartsAt) }
 										</span>
-										<span class="text-xs font-mono text-slate-400" data-utc={ ISOTimestamp(sess.SessionStartsAt) }>
+										<span class="text-xs font-mono text-slate-400" data-utc={ ISOTimestamp(sess.SessionStartsAt) } data-format="time">
 											{ FormatTimeUTC(sess.SessionStartsAt) }
 										</span>
 									</div>
