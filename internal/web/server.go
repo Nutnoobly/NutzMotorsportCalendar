@@ -30,6 +30,8 @@ func (s *Server) Routes() http.Handler {
 
 	// Application routes (Go 1.22+ method + pattern syntax)
 	mux.HandleFunc("GET /", s.handleHome)
+	mux.HandleFunc("GET /robots.txt", s.handleRobots)
+	mux.HandleFunc("GET /sitemap.xml", s.handleSitemap)
 	mux.HandleFunc("GET /events/{slug}", s.handleEventDetail)
 	mux.HandleFunc("GET /series/{slug}/calendar.ics", s.handleICS)
 	mux.HandleFunc("POST /admin/refresh", s.adminAuthMiddleware(s.handleRefresh))

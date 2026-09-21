@@ -15,8 +15,8 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const (
-	f1ScheduleURL = "https://api.jolpi.ca/ergast/f1/current.json"
+var (
+	f1ScheduleURL = "https://api.jolpi.ca/ergast/f1/current.json?limit=100"
 	f1ResultsURL  = "https://api.jolpi.ca/ergast/f1/current/results.json"
 	f1SprintURL   = "https://api.jolpi.ca/ergast/f1/current/sprint.json"
 )
@@ -62,6 +62,9 @@ type f1SessionItem struct {
 
 type f1ResultsResponse struct {
 	MRData struct {
+		Total     string `json:"total"`
+		Limit     string `json:"limit"`
+		Offset    string `json:"offset"`
 		RaceTable struct {
 			Season string `json:"season"`
 			Races  []struct {
@@ -95,6 +98,9 @@ type f1ResultsResponse struct {
 
 type f1SprintResponse struct {
 	MRData struct {
+		Total     string `json:"total"`
+		Limit     string `json:"limit"`
+		Offset    string `json:"offset"`
 		RaceTable struct {
 			Season string `json:"season"`
 			Races  []struct {
@@ -313,168 +319,198 @@ func SyncF1(ctx context.Context, queries *db.Queries) error {
 }
 
 func syncF1Results(ctx context.Context, client *http.Client, queries *db.Queries, season int, roundEventMap map[int]int32, teamCache, driverCache map[string]int32) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, f1ResultsURL, nil)
-	if err != nil {
-		return err
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
+	limit := 100
+	offset := 0
 
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("results status: %d", resp.StatusCode)
-	}
-
-	var resultsData f1ResultsResponse
-	if err := json.NewDecoder(resp.Body).Decode(&resultsData); err != nil {
-		return err
-	}
-
-	for _, race := range resultsData.MRData.RaceTable.Races {
-		roundInt, err := strconv.Atoi(race.Round)
+	for {
+		url := fmt.Sprintf("%s?limit=%d&offset=%d", f1ResultsURL, limit, offset)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 		if err != nil {
-			continue
+			return err
 		}
-		eventID := roundEventMap[roundInt]
-		if eventID == 0 {
-			row, err := queries.GetEventBySeasonRound(ctx, db.GetEventBySeasonRoundParams{
-				SerieID:     "f1",
-				EventSeason: int32(season),
-				EventRound:  int32(roundInt),
-			})
-			if err != nil {
-				continue
-			}
-			eventID = row.EventID
+		resp, err := client.Do(req)
+		if err != nil {
+			return err
 		}
 
-		for _, res := range race.Results {
-			pos, err := strconv.Atoi(res.Position)
-			if err != nil || pos < 1 || pos > 3 {
-				// Only top 3 positions per DB constraint
-				continue
-			}
+		if resp.StatusCode != http.StatusOK {
+			resp.Body.Close()
+			return fmt.Errorf("results status: %d", resp.StatusCode)
+		}
 
-			teamID, err := EnsureTeam(ctx, queries, "f1", res.Constructor.Name, res.Constructor.ConstructorID, teamCache)
+		var resultsData f1ResultsResponse
+		if err := json.NewDecoder(resp.Body).Decode(&resultsData); err != nil {
+			resp.Body.Close()
+			return err
+		}
+		resp.Body.Close()
+
+		for _, race := range resultsData.MRData.RaceTable.Races {
+			roundInt, err := strconv.Atoi(race.Round)
 			if err != nil {
-				log.Printf("[fetcher-f1] Failed to ensure team %q: %v", res.Constructor.Name, err)
 				continue
 			}
-
-			driverNum, _ := strconv.Atoi(res.Driver.PermanentNumber)
-			if driverNum == 0 {
-				driverNum, _ = strconv.Atoi(res.Number)
+			eventID := roundEventMap[roundInt]
+			if eventID == 0 {
+				row, err := queries.GetEventBySeasonRound(ctx, db.GetEventBySeasonRoundParams{
+					SerieID:     "f1",
+					EventSeason: int32(season),
+					EventRound:  int32(roundInt),
+				})
+				if err != nil {
+					continue
+				}
+				eventID = row.EventID
 			}
 
-			driverID, err := EnsureDriver(ctx, queries, "f1", teamID, res.Driver.GivenName, res.Driver.FamilyName, res.Driver.Code, driverNum, res.Driver.DriverID, driverCache)
-			if err != nil {
-				log.Printf("[fetcher-f1] Failed to ensure driver %s %s: %v", res.Driver.GivenName, res.Driver.FamilyName, err)
-				continue
+			for _, res := range race.Results {
+				pos, err := strconv.Atoi(res.Position)
+				if err != nil || pos < 1 || pos > 3 {
+					// Only top 3 positions per DB constraint
+					continue
+				}
+
+				teamID, err := EnsureTeam(ctx, queries, "f1", res.Constructor.Name, res.Constructor.ConstructorID, teamCache)
+				if err != nil {
+					log.Printf("[fetcher-f1] Failed to ensure team %q: %v", res.Constructor.Name, err)
+					continue
+				}
+
+				driverNum, _ := strconv.Atoi(res.Driver.PermanentNumber)
+				if driverNum == 0 {
+					driverNum, _ = strconv.Atoi(res.Number)
+				}
+
+				driverID, err := EnsureDriver(ctx, queries, "f1", teamID, res.Driver.GivenName, res.Driver.FamilyName, res.Driver.Code, driverNum, res.Driver.DriverID, driverCache)
+				if err != nil {
+					log.Printf("[fetcher-f1] Failed to ensure driver %s %s: %v", res.Driver.GivenName, res.Driver.FamilyName, err)
+					continue
+				}
+
+				timeOrGap := ""
+				if res.Time != nil && res.Time.Time != "" {
+					timeOrGap = res.Time.Time
+				} else if res.Status != "" {
+					timeOrGap = res.Status
+				}
+
+				pts, _ := strconv.ParseFloat(res.Points, 64)
+
+				_ = queries.UpsertResult(ctx, db.UpsertResultParams{
+					EventID:         eventID,
+					SessionType:     "race",
+					ResultPosition:  int32(pos),
+					DriverID:        driverID,
+					TeamID:          teamID,
+					ResultTimeOrGap: pgtype.Text{String: timeOrGap, Valid: timeOrGap != ""},
+					ResultPoints:    pgtype.Float8{Float64: pts, Valid: true},
+				})
 			}
+		}
 
-			timeOrGap := ""
-			if res.Time != nil && res.Time.Time != "" {
-				timeOrGap = res.Time.Time
-			} else if res.Status != "" {
-				timeOrGap = res.Status
-			}
-
-			pts, _ := strconv.ParseFloat(res.Points, 64)
-
-			_ = queries.UpsertResult(ctx, db.UpsertResultParams{
-				EventID:         eventID,
-				SessionType:     "race",
-				ResultPosition:  int32(pos),
-				DriverID:        driverID,
-				TeamID:          teamID,
-				ResultTimeOrGap: pgtype.Text{String: timeOrGap, Valid: timeOrGap != ""},
-				ResultPoints:    pgtype.Float8{Float64: pts, Valid: true},
-			})
+		total, _ := strconv.Atoi(resultsData.MRData.Total)
+		offset += limit
+		if offset >= total || len(resultsData.MRData.RaceTable.Races) == 0 {
+			break
 		}
 	}
+
 	return nil
 }
 
 func syncF1SprintResults(ctx context.Context, client *http.Client, queries *db.Queries, season int, roundEventMap map[int]int32, teamCache, driverCache map[string]int32) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, f1SprintURL, nil)
-	if err != nil {
-		return err
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
+	limit := 100
+	offset := 0
 
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("sprint results status: %d", resp.StatusCode)
-	}
-
-	var sprintData f1SprintResponse
-	if err := json.NewDecoder(resp.Body).Decode(&sprintData); err != nil {
-		return err
-	}
-
-	for _, race := range sprintData.MRData.RaceTable.Races {
-		roundInt, err := strconv.Atoi(race.Round)
+	for {
+		url := fmt.Sprintf("%s?limit=%d&offset=%d", f1SprintURL, limit, offset)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 		if err != nil {
-			continue
+			return err
 		}
-		eventID := roundEventMap[roundInt]
-		if eventID == 0 {
-			row, err := queries.GetEventBySeasonRound(ctx, db.GetEventBySeasonRoundParams{
-				SerieID:     "f1",
-				EventSeason: int32(season),
-				EventRound:  int32(roundInt),
-			})
-			if err != nil {
-				continue
-			}
-			eventID = row.EventID
+		resp, err := client.Do(req)
+		if err != nil {
+			return err
 		}
 
-		for _, res := range race.SprintResults {
-			pos, err := strconv.Atoi(res.Position)
-			if err != nil || pos < 1 || pos > 3 {
-				continue
-			}
+		if resp.StatusCode != http.StatusOK {
+			resp.Body.Close()
+			return fmt.Errorf("sprint results status: %d", resp.StatusCode)
+		}
 
-			teamID, err := EnsureTeam(ctx, queries, "f1", res.Constructor.Name, res.Constructor.ConstructorID, teamCache)
+		var sprintData f1SprintResponse
+		if err := json.NewDecoder(resp.Body).Decode(&sprintData); err != nil {
+			resp.Body.Close()
+			return err
+		}
+		resp.Body.Close()
+
+		for _, race := range sprintData.MRData.RaceTable.Races {
+			roundInt, err := strconv.Atoi(race.Round)
 			if err != nil {
 				continue
 			}
-
-			driverNum, _ := strconv.Atoi(res.Driver.PermanentNumber)
-			if driverNum == 0 {
-				driverNum, _ = strconv.Atoi(res.Number)
+			eventID := roundEventMap[roundInt]
+			if eventID == 0 {
+				row, err := queries.GetEventBySeasonRound(ctx, db.GetEventBySeasonRoundParams{
+					SerieID:     "f1",
+					EventSeason: int32(season),
+					EventRound:  int32(roundInt),
+				})
+				if err != nil {
+					continue
+				}
+				eventID = row.EventID
 			}
 
-			driverID, err := EnsureDriver(ctx, queries, "f1", teamID, res.Driver.GivenName, res.Driver.FamilyName, res.Driver.Code, driverNum, res.Driver.DriverID, driverCache)
-			if err != nil {
-				continue
+			for _, res := range race.SprintResults {
+				pos, err := strconv.Atoi(res.Position)
+				if err != nil || pos < 1 || pos > 3 {
+					continue
+				}
+
+				teamID, err := EnsureTeam(ctx, queries, "f1", res.Constructor.Name, res.Constructor.ConstructorID, teamCache)
+				if err != nil {
+					continue
+				}
+
+				driverNum, _ := strconv.Atoi(res.Driver.PermanentNumber)
+				if driverNum == 0 {
+					driverNum, _ = strconv.Atoi(res.Number)
+				}
+
+				driverID, err := EnsureDriver(ctx, queries, "f1", teamID, res.Driver.GivenName, res.Driver.FamilyName, res.Driver.Code, driverNum, res.Driver.DriverID, driverCache)
+				if err != nil {
+					continue
+				}
+
+				timeOrGap := ""
+				if res.Time != nil && res.Time.Time != "" {
+					timeOrGap = res.Time.Time
+				} else if res.Status != "" {
+					timeOrGap = res.Status
+				}
+
+				pts, _ := strconv.ParseFloat(res.Points, 64)
+
+				_ = queries.UpsertResult(ctx, db.UpsertResultParams{
+					EventID:         eventID,
+					SessionType:     "sprint",
+					ResultPosition:  int32(pos),
+					DriverID:        driverID,
+					TeamID:          teamID,
+					ResultTimeOrGap: pgtype.Text{String: timeOrGap, Valid: timeOrGap != ""},
+					ResultPoints:    pgtype.Float8{Float64: pts, Valid: true},
+				})
 			}
+		}
 
-			timeOrGap := ""
-			if res.Time != nil && res.Time.Time != "" {
-				timeOrGap = res.Time.Time
-			} else if res.Status != "" {
-				timeOrGap = res.Status
-			}
-
-			pts, _ := strconv.ParseFloat(res.Points, 64)
-
-			_ = queries.UpsertResult(ctx, db.UpsertResultParams{
-				EventID:         eventID,
-				SessionType:     "sprint",
-				ResultPosition:  int32(pos),
-				DriverID:        driverID,
-				TeamID:          teamID,
-				ResultTimeOrGap: pgtype.Text{String: timeOrGap, Valid: timeOrGap != ""},
-				ResultPoints:    pgtype.Float8{Float64: pts, Valid: true},
-			})
+		total, _ := strconv.Atoi(sprintData.MRData.Total)
+		offset += limit
+		if offset >= total || len(sprintData.MRData.RaceTable.Races) == 0 {
+			break
 		}
 	}
+
 	return nil
 }

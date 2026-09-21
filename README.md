@@ -10,7 +10,8 @@ A small public fan site showing an **F1 + MotoGP** race calendar with auto-fetch
 - Event detail pages with session times, circuit info, official/ticket links
 - Live countdown to the next session (ticks every second)
 - Timezone auto-detect with manual override
-- Podium top-3 results with auto-generated summaries
+- Completed Grand Prix race recap & podium summaries with auto-generated editorial highlights
+- Weekend timetable session lifecycle status (Completed, Live, Scheduled) with race & sprint winner badges
 - `.ics` calendar export per series
 - Responsive on all devices — phone portrait/landscape, tablet, desktop
 - Canceled/postponed events shown grayed out with status badge

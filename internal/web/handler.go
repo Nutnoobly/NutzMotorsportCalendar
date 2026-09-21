@@ -129,3 +129,47 @@ func (s *Server) handleRefresh(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 	fmt.Fprintln(w, `{"status":"ok","message":"Refresh started in background"}`)
 }
+
+// handleRobots serves crawler directives and points to the dynamic sitemap.
+func (s *Server) handleRobots(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	fmt.Fprintln(w, "User-agent: *")
+	fmt.Fprintln(w, "Allow: /")
+	fmt.Fprintln(w, "Disallow: /admin/")
+	fmt.Fprintln(w, "")
+	fmt.Fprintf(w, "Sitemap: %s/sitemap.xml\n", views.GetBaseURL())
+}
+
+// handleSitemap dynamically generates a valid XML sitemap of all active events.
+func (s *Server) handleSitemap(w http.ResponseWriter, r *http.Request) {
+	var events []db.ListUpcomingEventsRow
+	if s.queries != nil {
+		startsAt := pgtype.Timestamptz{Time: time.Unix(0, 0), Valid: true}
+		var err error
+		events, err = s.queries.ListUpcomingEvents(r.Context(), startsAt)
+		if err != nil {
+			log.Printf("Sitemap error: failed to query events: %v", err)
+			http.Error(w, "Failed to generate sitemap", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	baseURL := views.GetBaseURL()
+
+	w.Header().Set("Content-Type", "application/xml; charset=utf-8")
+	fmt.Fprintln(w, `<?xml version="1.0" encoding="UTF-8"?>`)
+	fmt.Fprintln(w, `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`)
+
+	// Core static landing paths
+	fmt.Fprintf(w, "  <url><loc>%s/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>\n", baseURL)
+	fmt.Fprintf(w, "  <url><loc>%s/?series=f1</loc><changefreq>daily</changefreq><priority>0.9</priority></url>\n", baseURL)
+	fmt.Fprintf(w, "  <url><loc>%s/?series=motogp</loc><changefreq>daily</changefreq><priority>0.9</priority></url>\n", baseURL)
+
+	// Dynamic event pages
+	for _, e := range events {
+		fmt.Fprintf(w, "  <url><loc>%s/events/%s</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>\n", baseURL, e.EventSlug)
+	}
+
+	fmt.Fprintln(w, `</urlset>`)
+}
+

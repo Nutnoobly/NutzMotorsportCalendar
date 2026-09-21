@@ -9,7 +9,7 @@ import (
 
 // Home renders the complete homepage view.
 templ Home(selectedSeries string, events []db.ListUpcomingEventsRow) {
-	@Layout("Home") {
+	@Layout(DefaultHomeMeta(selectedSeries)) {
 		<div class="space-y-10">
 			<!-- Hero Telemetry Countdown HUD -->
 			@CountdownWidget(findNextEvent(events))

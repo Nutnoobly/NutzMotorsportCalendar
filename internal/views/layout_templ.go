@@ -8,7 +8,7 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func Layout(title string) templ.Component {
+func Layout(meta SEOMeta) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -34,15 +34,155 @@ func Layout(title string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(meta.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 9, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 9, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " | Nutz Motorsport Calendar</title><script>\n\t\t\t\t// Initialize theme immediately before render to prevent FOUC\n\t\t\t\tif (localStorage.getItem('theme') === 'light') {\n\t\t\t\t\tdocument.documentElement.classList.remove('dark');\n\t\t\t\t} else {\n\t\t\t\t\tdocument.documentElement.classList.add('dark');\n\t\t\t\t}\n\t\t\t</script><script src=\"https://cdn.tailwindcss.com\"></script><script src=\"https://unpkg.com/htmx.org@2.0.4\"></script><link rel=\"stylesheet\" href=\"/static/style.css\"><script src=\"/static/theme.js\"></script><script src=\"/static/countdown.js\" defer></script><script src=\"/static/timezone.js\" defer></script><script>\n\t\t\t\ttailwind.config = {\n\t\t\t\t\tdarkMode: 'class',\n\t\t\t\t\ttheme: {\n\t\t\t\t\t\textend: {\n\t\t\t\t\t\t\tcolors: {\n\t\t\t\t\t\t\t\tf1: '#e10600',\n\t\t\t\t\t\t\t\tmotogp: '#0090d0',\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t</script></head><body class=\"bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-full flex flex-col font-sans antialiased selection:bg-red-500 selection:text-white transition-colors duration-200\"><!-- Navigation Header --><header class=\"sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md transition-colors duration-200\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"flex items-center justify-between h-16\"><!-- Brand Logo --><a href=\"/\" class=\"flex items-center gap-3 group\"><div class=\"h-9 w-9 rounded-lg bg-red-600 flex items-center justify-center font-black text-white text-base shadow-lg shadow-red-600/30 group-hover:scale-105 transition-transform\">🏁</div><div class=\"flex flex-col\"><div class=\"flex items-center gap-1.5 font-black text-lg tracking-tight\"><span class=\"text-red-500\">Nutz</span> <span class=\"text-slate-900 dark:text-white\">Motorsport</span></div><span class=\"text-[10px] text-slate-500 dark:text-slate-400 -mt-1 tracking-wider uppercase\">F1 &amp; MotoGP Hub</span></div></a><!-- Navigation Links & Controls --><nav class=\"flex items-center gap-2 sm:gap-3\"><div class=\"flex items-center gap-1.5 bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800/80 rounded-lg px-2.5 py-1 text-xs text-slate-700 dark:text-slate-300\"><span class=\"text-slate-500 dark:text-slate-400\" aria-hidden=\"true\">🌍</span> <select id=\"tz-selector\" class=\"bg-transparent text-slate-700 dark:text-slate-300 text-xs font-medium focus:outline-none cursor-pointer pr-1\"><option value=\"auto\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Auto (Local)</option> <option value=\"UTC\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">UTC (Official)</option> <option value=\"Europe/London\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">London (GMT/BST)</option> <option value=\"Europe/Rome\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Monza / Rome (CET)</option> <option value=\"Europe/Paris\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Paris (CET)</option> <option value=\"Asia/Bangkok\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Bangkok (ICT)</option> <option value=\"Asia/Tokyo\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Tokyo (JST)</option> <option value=\"Asia/Singapore\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Singapore (SGT)</option> <option value=\"America/New_York\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">New York (ET)</option> <option value=\"America/Chicago\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Austin (CT)</option> <option value=\"America/Los_Angeles\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Las Vegas (PT)</option> <option value=\"Australia/Melbourne\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Melbourne (AEST)</option></select></div><!-- Theme Toggle Switch --><button id=\"theme-toggle\" type=\"button\" onclick=\"toggleTheme()\" class=\"flex items-center justify-center p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/70 dark:hover:bg-slate-800/60 border border-slate-200 dark:border-slate-800/80 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500\" aria-label=\"Toggle Dark/Light Mode\" title=\"Toggle Dark/Light Mode\"><!-- Sun icon: shown in dark mode, click to switch to light --><svg id=\"theme-toggle-light-icon\" class=\"w-4 h-4 hidden dark:block fill-none stroke-current\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"5\"></circle> <line x1=\"12\" y1=\"1\" x2=\"12\" y2=\"3\"></line> <line x1=\"12\" y1=\"21\" x2=\"12\" y2=\"23\"></line> <line x1=\"4.22\" y1=\"4.22\" x2=\"5.64\" y2=\"5.64\"></line> <line x1=\"18.36\" y1=\"18.36\" x2=\"19.78\" y2=\"19.78\"></line> <line x1=\"1\" y1=\"12\" x2=\"3\" y2=\"12\"></line> <line x1=\"21\" y1=\"12\" x2=\"23\" y2=\"12\"></line> <line x1=\"4.22\" y1=\"19.78\" x2=\"5.64\" y2=\"18.36\"></line> <line x1=\"18.36\" y1=\"5.64\" x2=\"19.78\" y2=\"4.22\"></line></svg><!-- Moon icon: shown in light mode, click to switch to dark --><svg id=\"theme-toggle-dark-icon\" class=\"w-4 h-4 block dark:hidden fill-none stroke-current\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z\"></path></svg></button><!-- GitHub Link --><a href=\"https://github.com/Nutnoobly/NutzMotorsportCalendar\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/70 dark:hover:bg-slate-800/60 transition-colors\" aria-label=\"GitHub Repository\"><svg class=\"w-4 h-4 fill-current\" viewBox=\"0 0 24 24\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z\"></path></svg> <span class=\"hidden sm:inline\">GitHub</span></a></nav></div></div></header><!-- Main Container --><main class=\"flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " | Nutz Motorsport Calendar</title><meta name=\"description\" content=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var3 string
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(meta.Description)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 10, Col: 54}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><meta name=\"robots\" content=\"index, follow\"><link rel=\"canonical\" href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var4 templ.SafeURL
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinURLErrs(meta.Canonical)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 12, Col: 46}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><!-- OpenGraph Tags --><meta property=\"og:site_name\" content=\"Nutz Motorsport Calendar\"><meta property=\"og:type\" content=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var5 string
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(meta.OGType)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 16, Col: 49}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><meta property=\"og:title\" content=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var6 string
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(meta.Title + " | Nutz Motorsport Calendar")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 17, Col: 81}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\"><meta property=\"og:description\" content=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(meta.Description)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 18, Col: 61}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"><meta property=\"og:url\" content=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(meta.Canonical)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 19, Col: 51}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"><meta property=\"og:image\" content=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var9 string
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(meta.OGImage)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 20, Col: 51}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"><!-- Twitter Card Tags --><meta name=\"twitter:card\" content=\"summary_large_image\"><meta name=\"twitter:title\" content=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var10 string
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(meta.Title + " | Nutz Motorsport Calendar")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 24, Col: 82}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"><meta name=\"twitter:description\" content=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var11 string
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(meta.Description)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 25, Col: 62}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"><meta name=\"twitter:image\" content=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var12 string
+		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(meta.OGImage)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 26, Col: 52}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if meta.JSONLD != "" {
+			templ_7745c5c3_Err = templ.Raw("<script type=\"application/ld+json\">\n"+string(meta.JSONLD)+"\n</script>").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<script>\n\t\t\t\t// Initialize theme immediately before render to prevent FOUC\n\t\t\t\tif (localStorage.getItem('theme') === 'light') {\n\t\t\t\t\tdocument.documentElement.classList.remove('dark');\n\t\t\t\t} else {\n\t\t\t\t\tdocument.documentElement.classList.add('dark');\n\t\t\t\t}\n\t\t\t</script><script src=\"https://cdn.tailwindcss.com\"></script><script src=\"https://unpkg.com/htmx.org@2.0.4\"></script><link rel=\"stylesheet\" href=\"/static/style.css\"><script src=\"/static/theme.js\"></script><script src=\"/static/countdown.js\" defer></script><script src=\"/static/timezone.js\" defer></script><script>\n\t\t\t\ttailwind.config = {\n\t\t\t\t\tdarkMode: 'class',\n\t\t\t\t\ttheme: {\n\t\t\t\t\t\textend: {\n\t\t\t\t\t\t\tcolors: {\n\t\t\t\t\t\t\t\tf1: '#e10600',\n\t\t\t\t\t\t\t\tmotogp: '#0090d0',\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t</script></head><body class=\"bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-full flex flex-col font-sans antialiased selection:bg-red-500 selection:text-white transition-colors duration-200\"><!-- Navigation Header --><header class=\"sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md transition-colors duration-200\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"flex items-center justify-between h-16\"><!-- Brand Logo --><a href=\"/\" class=\"flex items-center gap-3 group\"><div class=\"h-9 w-9 rounded-lg bg-red-600 flex items-center justify-center font-black text-white text-base shadow-lg shadow-red-600/30 group-hover:scale-105 transition-transform\">🏁</div><div class=\"flex flex-col\"><div class=\"flex items-center gap-1.5 font-black text-lg tracking-tight\"><span class=\"text-red-500\">Nutz</span> <span class=\"text-slate-900 dark:text-white\">Motorsport</span></div><span class=\"text-[10px] text-slate-500 dark:text-slate-400 -mt-1 tracking-wider uppercase\">F1 &amp; MotoGP Hub</span></div></a><!-- Navigation Links & Controls --><nav class=\"flex items-center gap-2 sm:gap-3\"><div class=\"flex items-center gap-1.5 bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800/80 rounded-lg px-2.5 py-1 text-xs text-slate-700 dark:text-slate-300\"><span class=\"text-slate-500 dark:text-slate-400\" aria-hidden=\"true\">🌍</span> <select id=\"tz-selector\" class=\"bg-transparent text-slate-700 dark:text-slate-300 text-xs font-medium focus:outline-none cursor-pointer pr-1\"><option value=\"auto\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Auto (Local)</option> <option value=\"UTC\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">UTC (Official)</option> <option value=\"Europe/London\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">London (GMT/BST)</option> <option value=\"Europe/Rome\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Monza / Rome (CET)</option> <option value=\"Europe/Paris\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Paris (CET)</option> <option value=\"Asia/Bangkok\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Bangkok (ICT)</option> <option value=\"Asia/Tokyo\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Tokyo (JST)</option> <option value=\"Asia/Singapore\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Singapore (SGT)</option> <option value=\"America/New_York\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">New York (ET)</option> <option value=\"America/Chicago\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Austin (CT)</option> <option value=\"America/Los_Angeles\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Las Vegas (PT)</option> <option value=\"Australia/Melbourne\" class=\"bg-white dark:bg-slate-950 text-slate-900 dark:text-white\">Melbourne (AEST)</option></select></div><!-- Theme Toggle Switch --><button id=\"theme-toggle\" type=\"button\" onclick=\"toggleTheme()\" class=\"flex items-center justify-center p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/70 dark:hover:bg-slate-800/60 border border-slate-200 dark:border-slate-800/80 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500\" aria-label=\"Toggle Dark/Light Mode\" title=\"Toggle Dark/Light Mode\"><!-- Sun icon: shown in dark mode, click to switch to light --><svg id=\"theme-toggle-light-icon\" class=\"w-4 h-4 hidden dark:block fill-none stroke-current\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"5\"></circle> <line x1=\"12\" y1=\"1\" x2=\"12\" y2=\"3\"></line> <line x1=\"12\" y1=\"21\" x2=\"12\" y2=\"23\"></line> <line x1=\"4.22\" y1=\"4.22\" x2=\"5.64\" y2=\"5.64\"></line> <line x1=\"18.36\" y1=\"18.36\" x2=\"19.78\" y2=\"19.78\"></line> <line x1=\"1\" y1=\"12\" x2=\"3\" y2=\"12\"></line> <line x1=\"21\" y1=\"12\" x2=\"23\" y2=\"12\"></line> <line x1=\"4.22\" y1=\"19.78\" x2=\"5.64\" y2=\"18.36\"></line> <line x1=\"18.36\" y1=\"5.64\" x2=\"19.78\" y2=\"4.22\"></line></svg><!-- Moon icon: shown in light mode, click to switch to dark --><svg id=\"theme-toggle-dark-icon\" class=\"w-4 h-4 block dark:hidden fill-none stroke-current\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z\"></path></svg></button><!-- GitHub Link --><a href=\"https://github.com/Nutnoobly/NutzMotorsportCalendar\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/70 dark:hover:bg-slate-800/60 transition-colors\" aria-label=\"GitHub Repository\"><svg class=\"w-4 h-4 fill-current\" viewBox=\"0 0 24 24\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z\"></path></svg> <span class=\"hidden sm:inline\">GitHub</span></a></nav></div></div></header><!-- Main Container --><main class=\"flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -50,7 +190,7 @@ func Layout(title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</main><!-- Footer --><footer class=\"mt-auto border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 py-8 text-center text-xs text-slate-500\"><div class=\"max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4\"><p>Built with Go, Templ, HTMX &amp; Supabase. Open source on <a href=\"https://github.com/Nutnoobly/NutzMotorsportCalendar\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white underline underline-offset-4 ml-1\">GitHub</a></p><p class=\"text-[11px] text-slate-500 dark:text-slate-600\">Unofficial fan project. Not affiliated with Formula 1, Dorna Sports, or MotoGP.</p></div></footer></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</main><!-- Footer --><footer class=\"mt-auto border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 py-8 text-center text-xs text-slate-500\"><div class=\"max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4\"><p>Built with Go, Templ, HTMX &amp; Supabase. Open source on <a href=\"https://github.com/Nutnoobly/NutzMotorsportCalendar\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white underline underline-offset-4 ml-1\">GitHub</a></p><p class=\"text-[11px] text-slate-500 dark:text-slate-600\">Unofficial fan project. Not affiliated with Formula 1, Dorna Sports, or MotoGP.</p></div></footer></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

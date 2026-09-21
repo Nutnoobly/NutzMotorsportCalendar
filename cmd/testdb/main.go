@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/db"
+	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/views"
 )
 
 func loadDotEnv(filepath string) {
@@ -118,5 +119,21 @@ func main() {
 			fmt.Printf(" - Event %d [%s] P%d: %s %s (%s) - Gap/Time: %v, Points: %.1f\n", eid, stype, pos, fname, lname, tname, timeGap, pts)
 		}
 		resultRows.Close()
+	}
+
+	fmt.Println("\nF1 Official Race Summaries Verification:")
+	f1Events, err := pool.Query(ctx, "SELECT event_id, event_round, event_name, event_slug FROM events WHERE serie_id = 'f1' AND event_status = 'completed' ORDER BY event_round ASC")
+	if err == nil {
+		for f1Events.Next() {
+			var eid, round int
+			var ename, eslug string
+			_ = f1Events.Scan(&eid, &round, &ename, &eslug)
+			results, _ := queries.ListResultsByEventID(ctx, int32(eid))
+			races := views.FilterResultsBySession(results, "race")
+			sprints := views.FilterResultsBySession(results, "sprint")
+			summary := views.GenerateRaceSummary(results)
+			fmt.Printf(" [R%02d] %s (%s):\n    Results: %d (Race: %d, Sprint: %d) | Summary: %s\n", round, ename, eslug, len(results), len(races), len(sprints), summary)
+		}
+		f1Events.Close()
 	}
 }

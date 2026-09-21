@@ -1,12 +1,34 @@
 package views
 
-templ Layout(title string) {
+templ Layout(meta SEOMeta) {
 	<!DOCTYPE html>
 	<html lang="en" class="h-full dark">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>{ title } | Nutz Motorsport Calendar</title>
+			<title>{ meta.Title } | Nutz Motorsport Calendar</title>
+			<meta name="description" content={ meta.Description }/>
+			<meta name="robots" content="index, follow"/>
+			<link rel="canonical" href={ meta.Canonical }/>
+
+			<!-- OpenGraph Tags -->
+			<meta property="og:site_name" content="Nutz Motorsport Calendar"/>
+			<meta property="og:type" content={ meta.OGType }/>
+			<meta property="og:title" content={ meta.Title + " | Nutz Motorsport Calendar" }/>
+			<meta property="og:description" content={ meta.Description }/>
+			<meta property="og:url" content={ meta.Canonical }/>
+			<meta property="og:image" content={ meta.OGImage }/>
+
+			<!-- Twitter Card Tags -->
+			<meta name="twitter:card" content="summary_large_image"/>
+			<meta name="twitter:title" content={ meta.Title + " | Nutz Motorsport Calendar" }/>
+			<meta name="twitter:description" content={ meta.Description }/>
+			<meta name="twitter:image" content={ meta.OGImage }/>
+
+			if meta.JSONLD != "" {
+				@templ.Raw("<script type=\"application/ld+json\">\n" + string(meta.JSONLD) + "\n</script>")
+			}
+
 			<script>
 				// Initialize theme immediately before render to prevent FOUC
 				if (localStorage.getItem('theme') === 'light') {
