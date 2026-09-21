@@ -422,3 +422,21 @@ func TestEventDetailRenderSprintWeekendSplit(t *testing.T) {
 	}
 }
 
+func TestSeriesBadgeClass(t *testing.T) {
+	f1Class := views.SeriesBadgeClass("f1")
+	if !strings.Contains(f1Class, "text-red-600") || !strings.Contains(f1Class, "dark:text-red-400") {
+		t.Errorf("expected light/dark red classes for f1, got %q", f1Class)
+	}
+
+	motogpClass := views.SeriesBadgeClass("motogp")
+	if !strings.Contains(motogpClass, "text-sky-600") || !strings.Contains(motogpClass, "dark:text-sky-400") {
+		t.Errorf("expected light/dark sky classes for motogp, got %q", motogpClass)
+	}
+
+	defaultClass := views.SeriesBadgeClass("other")
+	if !strings.Contains(defaultClass, "text-slate-700") || !strings.Contains(defaultClass, "dark:text-slate-300") {
+		t.Errorf("expected slate classes for default, got %q", defaultClass)
+	}
+}
+
+

@@ -123,7 +123,7 @@ func CountdownWidget(event *db.ListUpcomingEventsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var5 = []any{"inline-block px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider text-white ", SeriesBadgeClass(event.SerieID)}
+			var templ_7745c5c3_Var5 = []any{"inline-block px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider", SeriesBadgeClass(event.SerieID)}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -454,7 +454,7 @@ func EventCard(event db.ListUpcomingEventsRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var27 = []any{"inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white ", SeriesBadgeClass(event.SerieID)}
+		var templ_7745c5c3_Var27 = []any{"inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider", SeriesBadgeClass(event.SerieID)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var27...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

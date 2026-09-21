@@ -192,11 +192,11 @@ func ISOTimestamp(t pgtype.Timestamptz) string {
 func SeriesBadgeClass(serieID string) string {
 	switch serieID {
 	case "f1":
-		return "bg-red-500/10 text-red-400 border border-red-500/30"
+		return "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 dark:border-red-500/30"
 	case "motogp":
-		return "bg-sky-500/10 text-sky-400 border border-sky-500/30"
+		return "bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20 dark:border-sky-500/30"
 	default:
-		return "bg-slate-700/50 text-slate-300 border border-slate-600"
+		return "bg-slate-500/10 text-slate-700 dark:text-slate-300 border border-slate-500/20 dark:border-slate-600"
 	}
 }
 
