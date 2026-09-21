@@ -294,7 +294,7 @@ func GenerateRaceSummary(results []db.ListResultsByEventIDRow) string {
 	return summary
 }
 
-// GetSessionWinner finds the P1 winner for a given session kind ('race' or 'sprint').
+// GetSessionWinner finds the P1 winner for race, sprint, qualifying, or practice.
 func GetSessionWinner(sessionKind string, results []db.ListResultsByEventIDRow) *db.ListResultsByEventIDRow {
 	targetType := ""
 	switch strings.ToLower(sessionKind) {
@@ -302,6 +302,10 @@ func GetSessionWinner(sessionKind string, results []db.ListResultsByEventIDRow) 
 		targetType = "race"
 	case "sprint":
 		targetType = "sprint"
+	case "qualifying":
+		targetType = "qualifying"
+	case "practice":
+		targetType = "practice"
 	default:
 		return nil
 	}

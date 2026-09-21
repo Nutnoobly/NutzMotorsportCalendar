@@ -2,8 +2,10 @@ name: Scheduled Data Refresh
 
 on:
   schedule:
-    # Trigger daily at 04:00 UTC
-    - cron: "0 4 * * *"
+    # 1. Standard daily sync at 04:00 UTC (weekdays Monday through Thursday)
+    - cron: "0 4 * * 1-4"
+    # 2. Weekend active broadcast window: Every 15 minutes Friday through Sunday (06:00 to 22:00 UTC)
+    - cron: "*/15 6-22 * * 5,6,0"
   workflow_dispatch:
     inputs:
       reason:

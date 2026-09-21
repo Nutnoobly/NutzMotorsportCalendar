@@ -48,6 +48,9 @@ templ Layout(meta SEOMeta) {
 					darkMode: 'class',
 					theme: {
 						extend: {
+							screens: {
+								xs: '420px',
+							},
 							colors: {
 								f1: '#e10600',
 								motogp: '#0090d0',
@@ -57,30 +60,30 @@ templ Layout(meta SEOMeta) {
 				}
 			</script>
 		</head>
-		<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-full flex flex-col font-sans antialiased selection:bg-red-500 selection:text-white transition-colors duration-200">
+		<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-full flex flex-col font-sans antialiased selection:bg-red-500 selection:text-white transition-colors duration-200 overflow-x-hidden w-full max-w-full">
 			<!-- Navigation Header -->
 			<header class="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md transition-colors duration-200">
-				<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-					<div class="flex items-center justify-between h-16">
+				<div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+					<div class="flex items-center justify-between h-14 sm:h-16 gap-2">
 						<!-- Brand Logo -->
-						<a href="/" class="flex items-center gap-3 group">
-							<div class="h-9 w-9 rounded-lg bg-red-600 flex items-center justify-center font-black text-white text-base shadow-lg shadow-red-600/30 group-hover:scale-105 transition-transform">
+						<a href="/" class="flex items-center gap-2 sm:gap-3 group shrink-0">
+							<div class="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-red-600 flex items-center justify-center font-black text-white text-sm sm:text-base shadow-md shadow-red-600/30 group-hover:scale-105 transition-transform">
 								🏁
 							</div>
 							<div class="flex flex-col">
-								<div class="flex items-center gap-1.5 font-black text-lg tracking-tight">
+								<div class="flex items-center gap-1 font-black text-base sm:text-lg tracking-tight leading-none">
 									<span class="text-red-500">Nutz</span>
 									<span class="text-slate-900 dark:text-white">Motorsport</span>
 								</div>
-								<span class="text-[10px] text-slate-500 dark:text-slate-400 -mt-1 tracking-wider uppercase">F1 &amp; MotoGP Hub</span>
+								<span class="hidden sm:block text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 tracking-wider uppercase">F1 &amp; MotoGP Hub</span>
 							</div>
 						</a>
 
 						<!-- Navigation Links & Controls -->
-						<nav class="flex items-center gap-2 sm:gap-3">
-							<div class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800/80 rounded-lg px-2.5 py-1 text-xs text-slate-700 dark:text-slate-300">
-								<span class="text-slate-500 dark:text-slate-400" aria-hidden="true">🌍</span>
-								<select id="tz-selector" class="bg-transparent text-slate-700 dark:text-slate-300 text-xs font-medium focus:outline-none cursor-pointer pr-1">
+						<nav class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+							<div class="flex items-center gap-1 sm:gap-1.5 bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800/80 rounded-lg px-2 sm:px-2.5 py-1 text-xs text-slate-700 dark:text-slate-300 max-w-[125px] sm:max-w-none">
+								<span class="text-slate-500 dark:text-slate-400 text-xs shrink-0" aria-hidden="true">🌍</span>
+								<select id="tz-selector" class="bg-transparent text-slate-700 dark:text-slate-300 text-xs font-medium focus:outline-none cursor-pointer pr-1 w-[70px] xs:w-[88px] sm:w-auto max-w-[120px] sm:max-w-none truncate">
 									<option value="auto" class="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">Auto (Local)</option>
 									<option value="UTC" class="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">UTC (Official)</option>
 									<option value="Europe/London" class="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">London (GMT/BST)</option>
@@ -101,7 +104,7 @@ templ Layout(meta SEOMeta) {
 								id="theme-toggle"
 								type="button"
 								onclick="toggleTheme()"
-								class="flex items-center justify-center p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/70 dark:hover:bg-slate-800/60 border border-slate-200 dark:border-slate-800/80 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+								class="flex items-center justify-center p-1.5 sm:p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/70 dark:hover:bg-slate-800/60 border border-slate-200 dark:border-slate-800/80 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
 								aria-label="Toggle Dark/Light Mode"
 								title="Toggle Dark/Light Mode"
 							>
@@ -128,7 +131,7 @@ templ Layout(meta SEOMeta) {
 								href="https://github.com/Nutnoobly/NutzMotorsportCalendar"
 								target="_blank"
 								rel="noopener noreferrer"
-								class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/70 dark:hover:bg-slate-800/60 transition-colors"
+								class="flex items-center gap-1.5 p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/70 dark:hover:bg-slate-800/60 border border-slate-200 dark:border-slate-800/80 sm:border-transparent transition-colors"
 								aria-label="GitHub Repository"
 							>
 								<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -142,13 +145,13 @@ templ Layout(meta SEOMeta) {
 			</header>
 
 			<!-- Main Container -->
-			<main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+			<main class="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
 				{ children... }
 			</main>
 
 			<!-- Footer -->
-			<footer class="mt-auto border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 py-8 text-center text-xs text-slate-500">
-				<div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+			<footer class="mt-auto border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 py-5 sm:py-8 text-center text-xs text-slate-500">
+				<div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
 					<p>
 						Built with Go, Templ, HTMX &amp; Supabase. Open source on
 						<a

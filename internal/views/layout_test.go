@@ -70,6 +70,17 @@ func TestLayoutThemeAndNavbar(t *testing.T) {
 	if strings.Contains(html, `>Calendar</a>`) {
 		t.Errorf("expected calendar link in navbar to be removed")
 	}
+
+	// 6. Verify mobile responsiveness constraints on header
+	if !strings.Contains(html, "overflow-x-hidden") {
+		t.Errorf("expected overflow-x-hidden on body to prevent horizontal scroll")
+	}
+	if !strings.Contains(html, "h-14 sm:h-16") {
+		t.Errorf("expected compact mobile height h-14 on header")
+	}
+	if !strings.Contains(html, "truncate") {
+		t.Errorf("expected truncate on timezone selector to avoid header blowup on phone")
+	}
 }
 
 func TestEventDetailMeta(t *testing.T) {

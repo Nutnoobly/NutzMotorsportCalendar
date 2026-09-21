@@ -46,11 +46,11 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-8 max-w-5xl mx-auto\"><!-- Back Navigation --><div><a href=\"/\" class=\"inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors\"><span>&larr;</span> Back to Calendar</a></div><!-- Event Header Card --><div class=\"rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 p-6 sm:p-8 shadow-md dark:shadow-2xl transition-colors duration-200\"><div class=\"flex flex-col sm:flex-row sm:items-center justify-between gap-4\"><div class=\"space-y-2\"><div class=\"flex items-center gap-2.5 flex-wrap\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-5 sm:space-y-8 max-w-5xl mx-auto\"><!-- Back Navigation --><div><a href=\"/\" class=\"inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors\"><span>&larr;</span> Back to Calendar</a></div><!-- Event Header Card --><div class=\"rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 p-4 sm:p-6 lg:p-8 shadow-md dark:shadow-2xl transition-colors duration-200\"><div class=\"flex flex-col sm:flex-row sm:items-center justify-between gap-4\"><div class=\"space-y-1.5 sm:space-y-2\"><div class=\"flex items-center gap-2 flex-wrap\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 = []any{"px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider", SeriesBadgeClass(event.SerieID)}
+			var templ_7745c5c3_Var3 = []any{"px-2 py-0.5 rounded text-[11px] sm:text-xs font-bold uppercase tracking-wider", SeriesBadgeClass(event.SerieID)}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -111,7 +111,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var8 = []any{"px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider", StatusBadgeClass(event.EventStatus)}
+			var templ_7745c5c3_Var8 = []any{"px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold uppercase tracking-wider", StatusBadgeClass(event.EventStatus)}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -142,7 +142,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span></div><h1 class=\"text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span></div><h1 class=\"text-xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -155,7 +155,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</h1><p class=\"text-sm sm:text-base text-slate-600 dark:text-slate-400 flex items-center gap-2\"><span>📍</span> <span class=\"text-slate-900 dark:text-white font-medium\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</h1><p class=\"text-xs sm:text-sm lg:text-base text-slate-600 dark:text-slate-400 flex items-center gap-1.5 sm:gap-2 flex-wrap\"><span>📍</span> <span class=\"text-slate-900 dark:text-white font-medium\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -210,14 +210,14 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</p></div><div class=\"sm:text-right shrink-0\"><div class=\"text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold\">Race Weekend</div><div class=\"text-lg font-bold text-slate-900 dark:text-white font-mono mt-0.5\" data-utc=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</p></div><div class=\"sm:text-right shrink-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800/80 pt-3 sm:pt-0\"><div class=\"text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold\">Race Weekend</div><div class=\"text-base sm:text-lg font-bold text-slate-900 dark:text-white font-mono mt-0.5\" data-utc=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(ISOTimestamp(event.EventStartsAt))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 57, Col: 129}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 57, Col: 142}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 			if templ_7745c5c3_Err != nil {
@@ -267,7 +267,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 				return templ_7745c5c3_Err
 			}
 			if TextString(event.EventOfficialUrl, "") != "" || TextString(event.EventTicketUrl, "") != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"mt-6 pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-4 flex-wrap\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-3 sm:gap-4 flex-wrap text-xs\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -285,7 +285,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"inline-flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 underline underline-offset-4\">Official Event Site &nearr;</a> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"inline-flex items-center gap-1.5 font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 underline underline-offset-4\">Official Event Site &nearr;</a> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -304,7 +304,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 underline underline-offset-4\">Buy Tickets &nearr;</a>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"inline-flex items-center gap-1.5 font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 underline underline-offset-4\">Buy Tickets &nearr;</a>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -319,7 +319,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 				return templ_7745c5c3_Err
 			}
 			if event.EventStatus == "completed" && GenerateRaceSummary(results) != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent p-6 sm:p-7 shadow-sm\"><div class=\"flex items-start gap-4\"><div class=\"w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xl shrink-0\">🏆</div><div class=\"space-y-1.5\"><div class=\"flex items-center gap-2\"><span class=\"text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400\">Official Race Summary</span></div><p class=\"text-base sm:text-lg font-medium text-slate-900 dark:text-slate-100 leading-snug\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"rounded-xl sm:rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent p-4 sm:p-6 shadow-sm\"><div class=\"flex items-start gap-3 sm:gap-4\"><div class=\"w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-base sm:text-xl shrink-0\">🏆</div><div class=\"space-y-1\"><div class=\"flex items-center gap-2\"><span class=\"text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400\">Official Race Summary</span></div><p class=\"text-sm sm:text-base lg:text-lg font-medium text-slate-900 dark:text-slate-100 leading-snug\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -337,7 +337,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<!-- Grid: Timetable & Podium Results --><div class=\"grid grid-cols-1 lg:grid-cols-12 gap-8\"><!-- Weekend Timetable --><section class=\"lg:col-span-6 space-y-4\"><div class=\"flex items-center justify-between\"><h2 class=\"text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2\"><span>⏱️</span> Weekend Timetable</h2><span class=\"text-xs text-slate-500 font-mono\">Times in <span class=\"tz-abbr\">UTC</span></span></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<!-- Grid: Timetable & Podium Results --><div class=\"grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8\"><!-- Weekend Timetable --><section class=\"lg:col-span-6 space-y-3 sm:space-y-4\"><div class=\"flex items-center justify-between\"><h2 class=\"text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2\"><span>⏱️</span> Weekend Timetable</h2><span class=\"text-xs text-slate-500 font-mono\">Times in <span class=\"tz-abbr\">UTC</span></span></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -352,7 +352,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					return templ_7745c5c3_Err
 				}
 				for _, sess := range sessions {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-colors\"><div class=\"space-y-1\"><div class=\"flex items-center gap-2\"><span class=\"text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"p-3 sm:p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-colors gap-2.5\"><div class=\"space-y-0.5 sm:space-y-1\"><div class=\"flex items-center gap-1.5 sm:gap-2\"><span class=\"text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -369,7 +369,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var23 = []any{"text-[10px] font-mono font-semibold px-2 py-0.5 rounded border", SessionStatusBadgeClass(GetSessionStatus(sess.SessionStartsAt, event.EventStatus))}
+					var templ_7745c5c3_Var23 = []any{"text-[9px] sm:text-[10px] font-mono font-semibold px-1.5 sm:px-2 py-0.5 rounded border", SessionStatusBadgeClass(GetSessionStatus(sess.SessionStartsAt, event.EventStatus))}
 					templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var23...)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -400,7 +400,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</span></div><span class=\"text-sm font-semibold text-slate-900 dark:text-white block\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</span></div><span class=\"text-xs sm:text-sm font-semibold text-slate-900 dark:text-white block leading-snug\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -418,153 +418,173 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 						return templ_7745c5c3_Err
 					}
 					if winner := GetSessionWinner(sess.SessionKind, results); winner != nil {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<div class=\"text-xs text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1.5 pt-0.5\"><span>🏆 Winner:</span> <span class=\"font-bold\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<div class=\"text-[11px] sm:text-xs font-medium flex items-center gap-1.5 pt-0.5 flex-wrap\">")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						if sess.SessionKind == "qualifying" {
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<span class=\"text-amber-600 dark:text-amber-400 font-semibold\">🎯 Pole:</span> ")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+						} else if sess.SessionKind == "practice" {
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<span class=\"text-sky-600 dark:text-sky-400 font-semibold\">⏱️ Fastest:</span> ")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+						} else {
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<span class=\"text-amber-600 dark:text-amber-400 font-semibold\">🏆 Winner:</span> ")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<span class=\"font-bold text-slate-900 dark:text-white\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var27 string
 						templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(winner.DriverFirstName)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 148, Col: 60}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 154, Col: 91}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, " ")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, " ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var28 string
 						templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(winner.DriverLastName)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 148, Col: 86}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 154, Col: 117}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "</span> <span class=\"text-slate-400\">(")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "</span> <span class=\"text-slate-400\">(")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var29 string
 						templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(winner.TeamName)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 149, Col: 59}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 155, Col: 59}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, ")</span></div>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, ")</span></div>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</div><div class=\"text-right shrink-0\"><span class=\"text-xs font-mono font-medium text-slate-700 dark:text-slate-300 block\" data-utc=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</div><div class=\"text-right shrink-0 font-mono text-[11px] sm:text-xs\"><span class=\"font-medium text-slate-700 dark:text-slate-300 block\" data-utc=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var30 string
 					templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.ResolveAttributeValue(ISOTimestamp(sess.SessionStartsAt))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 154, Col: 140}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 160, Col: 122}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var30)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" data-format=\"date\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" data-format=\"date\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var31 string
 					templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(FormatDate(sess.SessionStartsAt))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 155, Col: 45}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 161, Col: 45}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "</span> <span class=\"text-xs font-mono text-slate-500 dark:text-slate-400\" data-utc=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "</span> <span class=\"text-slate-500 dark:text-slate-400\" data-utc=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var32 string
 					templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.ResolveAttributeValue(ISOTimestamp(sess.SessionStartsAt))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 157, Col: 122}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 163, Col: 104}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var32)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\" data-format=\"time\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\" data-format=\"time\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var33 string
 					templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(FormatTimeUTC(sess.SessionStartsAt))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 158, Col: 48}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 164, Col: 48}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</span></div></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "</span></div></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "</section><!-- Official Results / Podium --><section class=\"lg:col-span-6 space-y-4\"><div class=\"flex items-center justify-between flex-wrap gap-2\"><h2 class=\"text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2\"><span>🏆</span> Podium &amp; Results</h2>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "</section><!-- Official Results / Podium --><section class=\"lg:col-span-6 space-y-3 sm:space-y-4\"><div class=\"flex items-center justify-between flex-wrap gap-2\"><h2 class=\"text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2\"><span>🏆</span> Podium &amp; Results</h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(FilterResultsBySession(results, "sprint")) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<!-- Filter Tabs for Sprint Weekend --> <div class=\"inline-flex rounded-lg bg-slate-100 dark:bg-slate-900 p-1 border border-slate-200 dark:border-slate-800 text-xs font-mono font-bold\"><button type=\"button\" id=\"tab-btn-all\" onclick=\"switchResultsTab('all')\" class=\"px-2.5 py-1 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm transition\">All</button> <button type=\"button\" id=\"tab-btn-race\" onclick=\"switchResultsTab('race')\" class=\"px-2.5 py-1 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition\">Grand Prix</button> <button type=\"button\" id=\"tab-btn-sprint\" onclick=\"switchResultsTab('sprint')\" class=\"px-2.5 py-1 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition\">Sprint</button></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<!-- Filter Tabs for Sprint Weekend --> <div class=\"inline-flex rounded-lg bg-slate-100 dark:bg-slate-900 p-0.5 sm:p-1 border border-slate-200 dark:border-slate-800 text-xs font-mono font-bold\"><button type=\"button\" id=\"tab-btn-all\" onclick=\"switchResultsTab('all')\" class=\"px-2 py-0.5 sm:px-2.5 sm:py-1 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm transition\">All</button> <button type=\"button\" id=\"tab-btn-race\" onclick=\"switchResultsTab('race')\" class=\"px-2 py-0.5 sm:px-2.5 sm:py-1 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition\">Grand Prix</button> <button type=\"button\" id=\"tab-btn-sprint\" onclick=\"switchResultsTab('sprint')\" class=\"px-2 py-0.5 sm:px-2.5 sm:py-1 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition\">Sprint</button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else if len(results) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<span class=\"text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20\">Official</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "<span class=\"text-[11px] sm:text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20\">Official</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(results) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<div class=\"rounded-xl border border-dashed border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/20 p-8 text-center\"><div class=\"text-2xl mb-2\">🏁</div><p class=\"text-sm font-medium text-slate-900 dark:text-white\">Results Pending</p><p class=\"text-xs text-slate-500 dark:text-slate-400 mt-1\">Podium standings and classification will appear here following the race.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<div class=\"rounded-xl border border-dashed border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/20 p-6 sm:p-8 text-center\"><div class=\"text-xl sm:text-2xl mb-1.5 sm:mb-2\">🏁</div><p class=\"text-xs sm:text-sm font-medium text-slate-900 dark:text-white\">Results Pending</p><p class=\"text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1\">Podium standings and classification will appear here following the race.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<div class=\"space-y-6\"><!-- Grand Prix Race Results -->")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "<div class=\"space-y-4 sm:space-y-6\"><!-- Grand Prix Race Results -->")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if len(FilterResultsBySession(results, "race")) > 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "<div id=\"results-race-group\" class=\"space-y-3\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<div id=\"results-race-group\" class=\"space-y-2.5 sm:space-y-3\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					if len(FilterResultsBySession(results, "sprint")) > 0 {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "<div class=\"flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-800/80\"><h3 class=\"text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5\"><span>🏁</span> Grand Prix Race</h3><span class=\"text-[10px] font-mono font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20\">Main Race</span></div>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<div class=\"flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-800/80\"><h3 class=\"text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5\"><span>🏁</span> Grand Prix Race</h3><span class=\"text-[10px] font-mono font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20\">Main Race</span></div>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<div class=\"space-y-3\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<div class=\"space-y-2 sm:space-y-3\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -574,17 +594,17 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "</div></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "</div></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<!-- Sprint Race Results -->")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "<!-- Sprint Race Results -->")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if len(FilterResultsBySession(results, "sprint")) > 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<div id=\"results-sprint-group\" class=\"space-y-3\"><div class=\"flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-800/80\"><h3 class=\"text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5\"><span>⚡</span> Sprint Race</h3><span class=\"text-[10px] font-mono font-semibold text-amber-700 dark:text-amber-400 bg-amber-100/80 dark:bg-amber-500/10 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-500/20\">Saturday Sprint</span></div><div class=\"space-y-3\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<div id=\"results-sprint-group\" class=\"space-y-2.5 sm:space-y-3\"><div class=\"flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-800/80\"><h3 class=\"text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5\"><span>⚡</span> Sprint Race</h3><span class=\"text-[10px] font-mono font-semibold text-amber-700 dark:text-amber-400 bg-amber-100/80 dark:bg-amber-500/10 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-500/20\">Saturday Sprint</span></div><div class=\"space-y-2 sm:space-y-3\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -594,23 +614,23 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "</div></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "</div></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if len(FilterResultsBySession(results, "sprint")) > 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "<script>\n\t\t\t\t\t\t\t\tfunction switchResultsTab(tab) {\n\t\t\t\t\t\t\t\t\tconst raceGroup = document.getElementById('results-race-group');\n\t\t\t\t\t\t\t\t\tconst sprintGroup = document.getElementById('results-sprint-group');\n\t\t\t\t\t\t\t\t\tconst btnAll = document.getElementById('tab-btn-all');\n\t\t\t\t\t\t\t\t\tconst btnRace = document.getElementById('tab-btn-race');\n\t\t\t\t\t\t\t\t\tconst btnSprint = document.getElementById('tab-btn-sprint');\n\t\t\t\t\t\t\t\t\tif (!raceGroup || !sprintGroup) return;\n\n\t\t\t\t\t\t\t\t\tconst inactiveClass = 'px-2.5 py-1 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition';\n\t\t\t\t\t\t\t\t\tconst activeClass = 'px-2.5 py-1 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm transition';\n\n\t\t\t\t\t\t\t\t\t[btnAll, btnRace, btnSprint].forEach(b => { if (b) b.className = inactiveClass; });\n\n\t\t\t\t\t\t\t\t\tif (tab === 'race') {\n\t\t\t\t\t\t\t\t\t\traceGroup.style.display = 'block';\n\t\t\t\t\t\t\t\t\t\tsprintGroup.style.display = 'none';\n\t\t\t\t\t\t\t\t\t\tif (btnRace) btnRace.className = activeClass;\n\t\t\t\t\t\t\t\t\t} else if (tab === 'sprint') {\n\t\t\t\t\t\t\t\t\t\traceGroup.style.display = 'none';\n\t\t\t\t\t\t\t\t\t\tsprintGroup.style.display = 'block';\n\t\t\t\t\t\t\t\t\t\tif (btnSprint) btnSprint.className = activeClass;\n\t\t\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\t\t\traceGroup.style.display = 'block';\n\t\t\t\t\t\t\t\t\t\tsprintGroup.style.display = 'block';\n\t\t\t\t\t\t\t\t\t\tif (btnAll) btnAll.className = activeClass;\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t</script>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<script>\n\t\t\t\t\t\t\t\tfunction switchResultsTab(tab) {\n\t\t\t\t\t\t\t\t\tconst raceGroup = document.getElementById('results-race-group');\n\t\t\t\t\t\t\t\t\tconst sprintGroup = document.getElementById('results-sprint-group');\n\t\t\t\t\t\t\t\t\tconst btnAll = document.getElementById('tab-btn-all');\n\t\t\t\t\t\t\t\t\tconst btnRace = document.getElementById('tab-btn-race');\n\t\t\t\t\t\t\t\t\tconst btnSprint = document.getElementById('tab-btn-sprint');\n\t\t\t\t\t\t\t\t\tif (!raceGroup || !sprintGroup) return;\n\n\t\t\t\t\t\t\t\t\tconst inactiveClass = 'px-2 py-0.5 sm:px-2.5 sm:py-1 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition';\n\t\t\t\t\t\t\t\t\tconst activeClass = 'px-2 py-0.5 sm:px-2.5 sm:py-1 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm transition';\n\n\t\t\t\t\t\t\t\t\t[btnAll, btnRace, btnSprint].forEach(b => { if (b) b.className = inactiveClass; });\n\n\t\t\t\t\t\t\t\t\tif (tab === 'race') {\n\t\t\t\t\t\t\t\t\t\traceGroup.style.display = 'block';\n\t\t\t\t\t\t\t\t\t\tsprintGroup.style.display = 'none';\n\t\t\t\t\t\t\t\t\t\tif (btnRace) btnRace.className = activeClass;\n\t\t\t\t\t\t\t\t\t} else if (tab === 'sprint') {\n\t\t\t\t\t\t\t\t\t\traceGroup.style.display = 'none';\n\t\t\t\t\t\t\t\t\t\tsprintGroup.style.display = 'block';\n\t\t\t\t\t\t\t\t\t\tif (btnSprint) btnSprint.className = activeClass;\n\t\t\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\t\t\traceGroup.style.display = 'block';\n\t\t\t\t\t\t\t\t\t\tsprintGroup.style.display = 'block';\n\t\t\t\t\t\t\t\t\t\tif (btnAll) btnAll.className = activeClass;\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t</script>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "</section></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "</section></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -646,7 +666,7 @@ func ResultCard(res db.ListResultsByEventIDRow) templ.Component {
 			templ_7745c5c3_Var34 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var35 = []any{"rounded-xl border p-4 flex items-center justify-between shadow-sm dark:shadow-none",
+		var templ_7745c5c3_Var35 = []any{"rounded-lg sm:rounded-xl border p-2.5 sm:p-3.5 flex items-center justify-between shadow-sm dark:shadow-none gap-2",
 			templ.KV("border-amber-500/40 bg-amber-500/5", res.ResultPosition == 1),
 			templ.KV("border-slate-400/30 bg-slate-400/5", res.ResultPosition == 2),
 			templ.KV("border-amber-700/40 bg-amber-700/5", res.ResultPosition == 3),
@@ -655,7 +675,7 @@ func ResultCard(res db.ListResultsByEventIDRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "<div class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "<div class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -668,16 +688,16 @@ func ResultCard(res db.ListResultsByEventIDRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "\"><div class=\"flex items-center gap-3.5\"><!-- Position Badge -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "\"><div class=\"flex items-center gap-2.5 sm:gap-3.5\"><!-- Position Badge -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var37 = []any{"w-9 h-9 rounded-lg flex items-center justify-center font-mono text-base border", PositionBadgeClass(res.ResultPosition)}
+		var templ_7745c5c3_Var37 = []any{"w-7 h-7 sm:w-9 sm:h-9 rounded-md sm:rounded-lg flex items-center justify-center font-mono text-xs sm:text-base border shrink-0", PositionBadgeClass(res.ResultPosition)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var37...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<div class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "<div class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -690,78 +710,42 @@ func ResultCard(res db.ListResultsByEventIDRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var39 string
 		templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", res.ResultPosition))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 307, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 313, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "</div><!-- Driver & Team Details --><div><div class=\"flex items-center gap-1.5\"><span class=\"text-sm font-bold text-slate-900 dark:text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "</div><!-- Driver & Team Details --><div><div class=\"flex items-center gap-1.5 flex-wrap\"><span class=\"text-xs sm:text-sm font-bold text-slate-900 dark:text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var40 string
 		templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(res.DriverFirstName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 314, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 320, Col: 27}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, " ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, " ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var41 string
 		templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(res.DriverLastName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 314, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 320, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "</span> ")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if TextString(res.DriverCode, "") != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "<span class=\"text-[11px] font-mono text-slate-500 dark:text-slate-400 font-semibold\">(")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var42 string
-			templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs(TextString(res.DriverCode, ""))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 318, Col: 40}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, ")</span>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "</div><div class=\"text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5\"><span>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var43 string
-		templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.JoinStringErrs(res.TeamName)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 323, Col: 25}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var43))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -769,62 +753,98 @@ func ResultCard(res db.ListResultsByEventIDRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		if TextString(res.DriverCode, "") != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "<span class=\"text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 font-semibold\">(")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var42 string
+			templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs(TextString(res.DriverCode, ""))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 324, Col: 40}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, ")</span>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "</div><div class=\"text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5 flex-wrap\"><span>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var43 string
+		templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.JoinStringErrs(res.TeamName)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 329, Col: 25}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var43))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 79, "</span> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		if res.DriverNumber.Valid {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "<span>&bull;</span> <span class=\"font-mono\">#")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, "<span>&bull;</span> <span class=\"font-mono\">#")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var44 string
 			templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", res.DriverNumber.Int32))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 326, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 332, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 81, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "</div></div></div><!-- Gap & Points --><div class=\"text-right\"><div class=\"text-xs font-mono font-medium text-slate-700 dark:text-slate-300\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 82, "</div></div></div><!-- Gap & Points --><div class=\"text-right shrink-0 font-mono\"><div class=\"text-[11px] sm:text-xs font-medium text-slate-700 dark:text-slate-300\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var45 string
 		templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(TextString(res.ResultTimeOrGap, "Leader"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 335, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 341, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 79, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 83, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if res.ResultPoints.Valid && res.ResultPoints.Float64 > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, "<div class=\"text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-semibold mt-0.5\">+")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 84, "<div class=\"text-[10px] sm:text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold mt-0.5\">+")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var46 string
 			templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(FloatString(res.ResultPoints))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 339, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 345, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 81, " pts</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, " pts</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 82, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 86, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

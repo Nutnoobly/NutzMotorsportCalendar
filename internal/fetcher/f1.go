@@ -16,9 +16,10 @@ import (
 )
 
 var (
-	f1ScheduleURL = "https://api.jolpi.ca/ergast/f1/current.json?limit=100"
-	f1ResultsURL  = "https://api.jolpi.ca/ergast/f1/current/results.json"
-	f1SprintURL   = "https://api.jolpi.ca/ergast/f1/current/sprint.json"
+	f1ScheduleURL   = "https://api.jolpi.ca/ergast/f1/current.json?limit=100"
+	f1ResultsURL    = "https://api.jolpi.ca/ergast/f1/current/results.json"
+	f1SprintURL     = "https://api.jolpi.ca/ergast/f1/current/sprint.json"
+	f1QualifyingURL = "https://api.jolpi.ca/ergast/f1/current/qualifying.json"
 )
 
 type f1ScheduleResponse struct {
@@ -127,6 +128,39 @@ type f1SprintResponse struct {
 						Time   string `json:"time"`
 					} `json:"Time"`
 				} `json:"SprintResults"`
+			} `json:"Races"`
+		} `json:"RaceTable"`
+	} `json:"MRData"`
+}
+
+type f1QualifyingResponse struct {
+	MRData struct {
+		Total     string `json:"total"`
+		Limit     string `json:"limit"`
+		Offset    string `json:"offset"`
+		RaceTable struct {
+			Season string `json:"season"`
+			Races  []struct {
+				Season            string `json:"season"`
+				Round             string `json:"round"`
+				QualifyingResults []struct {
+					Number   string `json:"number"`
+					Position string `json:"position"`
+					Driver   struct {
+						DriverID        string `json:"driverId"`
+						PermanentNumber string `json:"permanentNumber"`
+						Code            string `json:"code"`
+						GivenName       string `json:"givenName"`
+						FamilyName      string `json:"familyName"`
+					} `json:"Driver"`
+					Constructor struct {
+						ConstructorID string `json:"constructorId"`
+						Name          string `json:"name"`
+					} `json:"Constructor"`
+					Q1 string `json:"Q1"`
+					Q2 string `json:"Q2"`
+					Q3 string `json:"Q3"`
+				} `json:"QualifyingResults"`
 			} `json:"Races"`
 		} `json:"RaceTable"`
 	} `json:"MRData"`
@@ -313,6 +347,11 @@ func SyncF1(ctx context.Context, queries *db.Queries) error {
 	// 3. Fetch Sprint Results
 	if err := syncF1SprintResults(ctx, client, queries, seasonInt, roundEventMap, teamCache, driverCache); err != nil {
 		log.Printf("[fetcher-f1] Non-fatal sprint sync warning: %v", err)
+	}
+
+	// 4. Fetch Qualifying Results
+	if err := syncF1QualifyingResults(ctx, client, queries, seasonInt, roundEventMap, teamCache, driverCache); err != nil {
+		log.Printf("[fetcher-f1] Non-fatal qualifying sync warning: %v", err)
 	}
 
 	return nil
@@ -508,6 +547,105 @@ func syncF1SprintResults(ctx context.Context, client *http.Client, queries *db.Q
 		total, _ := strconv.Atoi(sprintData.MRData.Total)
 		offset += limit
 		if offset >= total || len(sprintData.MRData.RaceTable.Races) == 0 {
+			break
+		}
+	}
+
+	return nil
+}
+
+func syncF1QualifyingResults(ctx context.Context, client *http.Client, queries *db.Queries, season int, roundEventMap map[int]int32, teamCache, driverCache map[string]int32) error {
+	limit := 100
+	offset := 0
+
+	for {
+		url := fmt.Sprintf("%s?limit=%d&offset=%d", f1QualifyingURL, limit, offset)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+		if err != nil {
+			return err
+		}
+		resp, err := client.Do(req)
+		if err != nil {
+			return err
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			resp.Body.Close()
+			return fmt.Errorf("qualifying results status: %d", resp.StatusCode)
+		}
+
+		var qData f1QualifyingResponse
+		if err := json.NewDecoder(resp.Body).Decode(&qData); err != nil {
+			resp.Body.Close()
+			return err
+		}
+		resp.Body.Close()
+
+		for _, race := range qData.MRData.RaceTable.Races {
+			roundInt, err := strconv.Atoi(race.Round)
+			if err != nil {
+				continue
+			}
+			eventID := roundEventMap[roundInt]
+			if eventID == 0 {
+				row, err := queries.GetEventBySeasonRound(ctx, db.GetEventBySeasonRoundParams{
+					SerieID:     "f1",
+					EventSeason: int32(season),
+					EventRound:  int32(roundInt),
+				})
+				if err != nil {
+					continue
+				}
+				eventID = row.EventID
+			}
+
+			for _, q := range race.QualifyingResults {
+				pos, err := strconv.Atoi(q.Position)
+				if err != nil || pos < 1 || pos > 3 {
+					// Only top 3 positions per DB constraint
+					continue
+				}
+
+				teamID, err := EnsureTeam(ctx, queries, "f1", q.Constructor.Name, q.Constructor.ConstructorID, teamCache)
+				if err != nil {
+					log.Printf("[fetcher-f1] Failed to ensure team %q: %v", q.Constructor.Name, err)
+					continue
+				}
+
+				driverNum, _ := strconv.Atoi(q.Driver.PermanentNumber)
+				if driverNum == 0 {
+					driverNum, _ = strconv.Atoi(q.Number)
+				}
+
+				driverID, err := EnsureDriver(ctx, queries, "f1", teamID, q.Driver.GivenName, q.Driver.FamilyName, q.Driver.Code, driverNum, q.Driver.DriverID, driverCache)
+				if err != nil {
+					log.Printf("[fetcher-f1] Failed to ensure driver %s %s: %v", q.Driver.GivenName, q.Driver.FamilyName, err)
+					continue
+				}
+
+				bestTime := q.Q3
+				if bestTime == "" {
+					bestTime = q.Q2
+				}
+				if bestTime == "" {
+					bestTime = q.Q1
+				}
+
+				_ = queries.UpsertResult(ctx, db.UpsertResultParams{
+					EventID:         eventID,
+					SessionType:     "qualifying",
+					ResultPosition:  int32(pos),
+					DriverID:        driverID,
+					TeamID:          teamID,
+					ResultTimeOrGap: pgtype.Text{String: bestTime, Valid: bestTime != ""},
+					ResultPoints:    pgtype.Float8{Float64: 0, Valid: false},
+				})
+			}
+		}
+
+		total, _ := strconv.Atoi(qData.MRData.Total)
+		offset += limit
+		if offset >= total || len(qData.MRData.RaceTable.Races) == 0 {
 			break
 		}
 	}

@@ -7,8 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/db"
 	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/web"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 func TestStaticThemeFile(t *testing.T) {
@@ -157,6 +160,51 @@ func TestSitemapXml(t *testing.T) {
 	if !strings.Contains(body, "<loc>https://nutzmotorsportcalendar.onrender.com/?series=motogp</loc>") {
 		t.Errorf("expected MotoGP URL in sitemap")
 	}
+}
+
+func TestShouldTriggerEventRefresh(t *testing.T) {
+	now := time.Now()
+
+	t.Run("future event far away returns false", func(t *testing.T) {
+		event := db.GetEventBySlugRow{
+			EventSlug:     "future-gp",
+			EventStatus:   "scheduled",
+			EventStartsAt: pgtype.Timestamptz{Time: now.Add(24 * time.Hour), Valid: true},
+		}
+		if web.ShouldTriggerEventRefresh(event, nil) {
+			t.Errorf("expected false for distant future event")
+		}
+	})
+
+	t.Run("completed event with results returns false", func(t *testing.T) {
+		event := db.GetEventBySlugRow{
+			EventSlug:     "completed-gp",
+			EventStatus:   "completed",
+			EventStartsAt: pgtype.Timestamptz{Time: now.Add(-2 * time.Hour), Valid: true},
+		}
+		results := []db.ListResultsByEventIDRow{
+			{SessionType: "race", ResultPosition: 1},
+		}
+		if web.ShouldTriggerEventRefresh(event, results) {
+			t.Errorf("expected false for completed event with results")
+		}
+	})
+
+	t.Run("active event triggers refresh and debounces subsequent calls", func(t *testing.T) {
+		event := db.GetEventBySlugRow{
+			EventSlug:     "live-gp-" + t.Name(),
+			EventStatus:   "scheduled",
+			EventStartsAt: pgtype.Timestamptz{Time: now.Add(-1 * time.Hour), Valid: true},
+		}
+		// First call should trigger
+		if !web.ShouldTriggerEventRefresh(event, nil) {
+			t.Errorf("expected true for event that started 1 hour ago without results")
+		}
+		// Immediate second call should debounce (return false)
+		if web.ShouldTriggerEventRefresh(event, nil) {
+			t.Errorf("expected false due to debounce within 5 minutes")
+		}
+	})
 }
 
 

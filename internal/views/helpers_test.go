@@ -158,10 +158,37 @@ func TestGetSessionWinner(t *testing.T) {
 		}
 	})
 
-	t.Run("practice returns nil", func(t *testing.T) {
+	t.Run("practice returns nil when missing", func(t *testing.T) {
 		practiceWinner := views.GetSessionWinner("practice", results)
 		if practiceWinner != nil {
 			t.Errorf("expected nil for practice winner")
+		}
+	})
+
+	t.Run("qualifying and practice winners when present", func(t *testing.T) {
+		extendedResults := append(results,
+			db.ListResultsByEventIDRow{
+				SessionType:     "qualifying",
+				ResultPosition:  1,
+				DriverFirstName: "George",
+				DriverLastName:  "Russell",
+			},
+			db.ListResultsByEventIDRow{
+				SessionType:     "practice",
+				ResultPosition:  1,
+				DriverFirstName: "Charles",
+				DriverLastName:  "Leclerc",
+			},
+		)
+
+		qualiWinner := views.GetSessionWinner("qualifying", extendedResults)
+		if qualiWinner == nil || qualiWinner.DriverLastName != "Russell" {
+			t.Errorf("expected Russell as qualifying pole winner")
+		}
+
+		practiceWinner := views.GetSessionWinner("practice", extendedResults)
+		if practiceWinner == nil || practiceWinner.DriverLastName != "Leclerc" {
+			t.Errorf("expected Leclerc as practice fastest driver")
 		}
 	})
 }
@@ -294,6 +321,80 @@ func TestEventDetailRenderWithSummaryAndWinner(t *testing.T) {
 	}
 	if !strings.Contains(html, "Completed") {
 		t.Errorf("expected 'Completed' session status badge in rendered HTML")
+	}
+}
+
+func TestEventDetailRenderWithQualifyingAndPracticeBadges(t *testing.T) {
+	event := db.GetEventBySlugRow{
+		EventID:       10,
+		SerieID:       "f1",
+		EventSeason:   2026,
+		EventRound:    1,
+		EventSlug:     "australian-gp-2026",
+		EventName:     "Australian Grand Prix",
+		CircuitName:   "Albert Park Circuit",
+		EventStatus:   "completed",
+		EventStartsAt: pgtype.Timestamptz{Time: time.Now().Add(-24 * time.Hour), Valid: true},
+	}
+
+	sessions := []db.Session{
+		{
+			SessionKind:     "practice",
+			SessionName:     "Practice 1",
+			SessionStartsAt: pgtype.Timestamptz{Time: time.Now().Add(-48 * time.Hour), Valid: true},
+		},
+		{
+			SessionKind:     "qualifying",
+			SessionName:     "Qualifying",
+			SessionStartsAt: pgtype.Timestamptz{Time: time.Now().Add(-30 * time.Hour), Valid: true},
+		},
+		{
+			SessionKind:     "race",
+			SessionName:     "Grand Prix Race",
+			SessionStartsAt: pgtype.Timestamptz{Time: time.Now().Add(-24 * time.Hour), Valid: true},
+		},
+	}
+
+	results := []db.ListResultsByEventIDRow{
+		{
+			SessionType:     "practice",
+			ResultPosition:  1,
+			DriverFirstName: "Charles",
+			DriverLastName:  "Leclerc",
+			TeamName:        "Ferrari",
+		},
+		{
+			SessionType:     "qualifying",
+			ResultPosition:  1,
+			DriverFirstName: "George",
+			DriverLastName:  "Russell",
+			TeamName:        "Mercedes",
+		},
+		{
+			SessionType:     "race",
+			ResultPosition:  1,
+			DriverFirstName: "Lewis",
+			DriverLastName:  "Hamilton",
+			TeamName:        "Ferrari",
+		},
+	}
+
+	var buf bytes.Buffer
+	component := views.EventDetail(event, sessions, results)
+	err := component.Render(context.Background(), &buf)
+	if err != nil {
+		t.Fatalf("unexpected render error: %v", err)
+	}
+
+	html := buf.String()
+	if !strings.Contains(html, "⏱️ Fastest:") || !strings.Contains(html, "Charles Leclerc") {
+		t.Errorf("expected '⏱️ Fastest: Charles Leclerc' in rendered HTML")
+	}
+	if !strings.Contains(html, "🎯 Pole:") || !strings.Contains(html, "George Russell") {
+		t.Errorf("expected '🎯 Pole: George Russell' in rendered HTML")
+	}
+	if !strings.Contains(html, "🏆 Winner:") || !strings.Contains(html, "Lewis Hamilton") {
+		t.Errorf("expected '🏆 Winner: Lewis Hamilton' in rendered HTML")
 	}
 }
 

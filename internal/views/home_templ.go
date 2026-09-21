@@ -49,7 +49,7 @@ func Home(selectedSeries string, events []db.ListUpcomingEventsRow) templ.Compon
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-10\"><!-- Hero Telemetry Countdown HUD -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6 sm:space-y-10\"><!-- Hero Telemetry Countdown HUD -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -101,7 +101,7 @@ func CountdownWidget(event *db.ListUpcomingEventsRow) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"relative overflow-hidden rounded-lg border border-slate-200 dark:border-[#262a34] bg-white dark:bg-[#15181f] p-6 sm:p-8 telemetry-grid shadow-sm dark:shadow-none transition-colors duration-200\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"relative overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200 dark:border-[#262a34] bg-white dark:bg-[#15181f] p-4 sm:p-6 lg:p-8 telemetry-grid shadow-sm dark:shadow-none transition-colors duration-200\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -119,7 +119,7 @@ func CountdownWidget(event *db.ListUpcomingEventsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"grid grid-cols-1 lg:grid-cols-12 gap-8 items-center\"><!-- Left: Event Context --><div class=\"lg:col-span-6 space-y-3\"><div class=\"flex items-center gap-2.5\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center\"><!-- Left: Event Context --><div class=\"lg:col-span-6 space-y-2 sm:space-y-3\"><div class=\"flex items-center gap-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -180,7 +180,7 @@ func CountdownWidget(event *db.ListUpcomingEventsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span></div><h2 class=\"text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight leading-snug\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span></div><h2 class=\"text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight leading-snug\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -206,7 +206,7 @@ func CountdownWidget(event *db.ListUpcomingEventsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</a></h2><div class=\"flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-slate-400 font-mono\"><span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</a></h2><div class=\"flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-mono\"><span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -258,12 +258,12 @@ func CountdownWidget(event *db.ListUpcomingEventsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</span></div></div><!-- Right: Telemetry Counter --><div class=\"lg:col-span-6 flex flex-col items-start lg:items-end gap-3\"><div class=\"flex items-center justify-between w-full lg:w-auto gap-4\"><div class=\"flex items-center gap-2\"><span class=\"text-xs font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider\">T-Minus to Race Start</span> <span class=\"text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold tz-abbr\">UTC</span></div><div id=\"hud-status\" class=\"inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-mono font-semibold bg-emerald-100/80 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800/60\"><span class=\"w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400\"></span> UPCOMING</div></div><div class=\"grid grid-cols-4 gap-2 sm:gap-3 w-full sm:w-auto font-mono text-center\"><div class=\"bg-slate-100 dark:bg-[#0f1115] border border-slate-200 dark:border-[#262a34] rounded px-3 py-2.5 min-w-[64px] sm:min-w-[78px] transition-colors\"><div id=\"hud-days\" class=\"text-2xl sm:text-4xl font-black text-slate-900 dark:text-slate-100 tabular-nums\">00</div><div class=\"text-[10px] text-slate-500 uppercase font-semibold mt-0.5\">Days</div></div><div class=\"bg-slate-100 dark:bg-[#0f1115] border border-slate-200 dark:border-[#262a34] rounded px-3 py-2.5 min-w-[64px] sm:min-w-[78px] transition-colors\"><div id=\"hud-hours\" class=\"text-2xl sm:text-4xl font-black text-slate-900 dark:text-slate-100 tabular-nums\">00</div><div class=\"text-[10px] text-slate-500 uppercase font-semibold mt-0.5\">Hours</div></div><div class=\"bg-slate-100 dark:bg-[#0f1115] border border-slate-200 dark:border-[#262a34] rounded px-3 py-2.5 min-w-[64px] sm:min-w-[78px] transition-colors\"><div id=\"hud-minutes\" class=\"text-2xl sm:text-4xl font-black text-slate-900 dark:text-slate-100 tabular-nums\">00</div><div class=\"text-[10px] text-slate-500 uppercase font-semibold mt-0.5\">Mins</div></div><div class=\"bg-slate-100 dark:bg-[#0f1115] border border-slate-200 dark:border-[#262a34] rounded px-3 py-2.5 min-w-[64px] sm:min-w-[78px] transition-colors\"><div id=\"hud-seconds\" class=\"text-2xl sm:text-4xl font-black text-slate-900 dark:text-slate-100 tabular-nums\">00</div><div class=\"text-[10px] text-slate-500 uppercase font-semibold mt-0.5\">Secs</div></div></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</span></div></div><!-- Right: Telemetry Counter --><div class=\"lg:col-span-6 flex flex-col items-start lg:items-end gap-2.5 sm:gap-3\"><div class=\"flex items-center justify-between w-full lg:w-auto gap-3\"><div class=\"flex items-center gap-1.5 sm:gap-2\"><span class=\"text-[11px] sm:text-xs font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider\">T-Minus to Race</span> <span class=\"text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold tz-abbr\">UTC</span></div><div id=\"hud-status\" class=\"inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] sm:text-xs font-mono font-semibold bg-emerald-100/80 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800/60\"><span class=\"w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400\"></span> UPCOMING</div></div><div class=\"grid grid-cols-4 gap-1.5 sm:gap-3 w-full sm:w-auto font-mono text-center\"><div class=\"bg-slate-100 dark:bg-[#0f1115] border border-slate-200 dark:border-[#262a34] rounded-lg px-2 py-2 sm:px-3 sm:py-2.5 transition-colors\"><div id=\"hud-days\" class=\"text-xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-slate-100 tabular-nums\">00</div><div class=\"text-[9px] sm:text-[10px] text-slate-500 uppercase font-semibold mt-0.5\">Days</div></div><div class=\"bg-slate-100 dark:bg-[#0f1115] border border-slate-200 dark:border-[#262a34] rounded-lg px-2 py-2 sm:px-3 sm:py-2.5 transition-colors\"><div id=\"hud-hours\" class=\"text-xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-slate-100 tabular-nums\">00</div><div class=\"text-[9px] sm:text-[10px] text-slate-500 uppercase font-semibold mt-0.5\">Hours</div></div><div class=\"bg-slate-100 dark:bg-[#0f1115] border border-slate-200 dark:border-[#262a34] rounded-lg px-2 py-2 sm:px-3 sm:py-2.5 transition-colors\"><div id=\"hud-minutes\" class=\"text-xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-slate-100 tabular-nums\">00</div><div class=\"text-[9px] sm:text-[10px] text-slate-500 uppercase font-semibold mt-0.5\">Mins</div></div><div class=\"bg-slate-100 dark:bg-[#0f1115] border border-slate-200 dark:border-[#262a34] rounded-lg px-2 py-2 sm:px-3 sm:py-2.5 transition-colors\"><div id=\"hud-seconds\" class=\"text-xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-slate-100 tabular-nums\">00</div><div class=\"text-[9px] sm:text-[10px] text-slate-500 uppercase font-semibold mt-0.5\">Secs</div></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"text-center py-6 space-y-2\"><div class=\"text-xs font-mono uppercase tracking-wider text-slate-500\">Season Status</div><div class=\"text-lg font-bold text-slate-700 dark:text-slate-300\">No upcoming races scheduled. Check back soon.</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"text-center py-6 space-y-2\"><div class=\"text-xs font-mono uppercase tracking-wider text-slate-500\">Season Status</div><div class=\"text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300\">No upcoming races scheduled. Check back soon.</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -298,11 +298,11 @@ func EventsSection(selectedSeries string, events []db.ListUpcomingEventsRow) tem
 			templ_7745c5c3_Var16 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div id=\"calendar-section\" class=\"space-y-6\"><!-- Filter Bar --><div class=\"flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-[#262a34] transition-colors\"><!-- Filter Tabs with HTMX Swapping --><div class=\"inline-flex rounded bg-slate-100 dark:bg-[#15181f] p-1 border border-slate-200 dark:border-[#262a34] transition-colors\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div id=\"calendar-section\" class=\"space-y-4 sm:space-y-6\"><!-- Filter Bar --><div class=\"flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-2 border-b border-slate-200 dark:border-[#262a34] transition-colors\"><!-- Filter Tabs with HTMX Swapping --><div class=\"inline-flex rounded-lg bg-slate-100 dark:bg-[#15181f] p-0.5 sm:p-1 border border-slate-200 dark:border-[#262a34] transition-colors\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var17 = []any{"px-4 py-1.5 rounded text-xs font-mono font-bold transition ", templ.KV("bg-slate-900 dark:bg-slate-700 text-white", selectedSeries == ""), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "")}
+		var templ_7745c5c3_Var17 = []any{"px-3 py-1 sm:px-4 sm:py-1.5 rounded-md text-xs font-mono font-bold transition ", templ.KV("bg-slate-900 dark:bg-slate-700 text-white", selectedSeries == ""), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var17...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -324,7 +324,7 @@ func EventsSection(selectedSeries string, events []db.ListUpcomingEventsRow) tem
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var19 = []any{"px-4 py-1.5 rounded text-xs font-mono font-bold transition ", templ.KV("bg-[#e10600] text-white", selectedSeries == "f1"), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "f1")}
+		var templ_7745c5c3_Var19 = []any{"px-3 py-1 sm:px-4 sm:py-1.5 rounded-md text-xs font-mono font-bold transition ", templ.KV("bg-[#e10600] text-white", selectedSeries == "f1"), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "f1")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var19...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -346,7 +346,7 @@ func EventsSection(selectedSeries string, events []db.ListUpcomingEventsRow) tem
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var21 = []any{"px-4 py-1.5 rounded text-xs font-mono font-bold transition ", templ.KV("bg-[#0090d0] text-white", selectedSeries == "motogp"), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "motogp")}
+		var templ_7745c5c3_Var21 = []any{"px-3 py-1 sm:px-4 sm:py-1.5 rounded-md text-xs font-mono font-bold transition ", templ.KV("bg-[#0090d0] text-white", selectedSeries == "motogp"), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "motogp")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var21...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -364,17 +364,17 @@ func EventsSection(selectedSeries string, events []db.ListUpcomingEventsRow) tem
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\">MOTOGP</button></div><!-- Calendar Export Feeds --><div class=\"flex items-center gap-3 text-xs font-mono\"><span class=\"text-slate-500\">Subscribe:</span> <a href=\"/series/f1/calendar.ics\" class=\"text-slate-600 dark:text-slate-400 hover:text-[#e10600] transition\">.ics (F1)</a> <span class=\"text-slate-300 dark:text-slate-700\">|</span> <a href=\"/series/motogp/calendar.ics\" class=\"text-slate-600 dark:text-slate-400 hover:text-[#0090d0] transition\">.ics (MotoGP)</a></div></div><!-- Race List -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\">MOTOGP</button></div><!-- Calendar Export Feeds --><div class=\"flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs font-mono\"><span class=\"text-slate-500\">Subscribe:</span> <a href=\"/series/f1/calendar.ics\" class=\"text-slate-600 dark:text-slate-400 hover:text-[#e10600] transition\">.ics (F1)</a> <span class=\"text-slate-300 dark:text-slate-700\">|</span> <a href=\"/series/motogp/calendar.ics\" class=\"text-slate-600 dark:text-slate-400 hover:text-[#0090d0] transition\">.ics (MotoGP)</a></div></div><!-- Race List -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if len(events) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"text-center py-16 border border-dashed border-slate-300 dark:border-[#262a34] rounded-lg text-slate-500 font-mono text-sm\">No events found for this filter.</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"text-center py-12 sm:py-16 border border-dashed border-slate-300 dark:border-[#262a34] rounded-lg text-slate-500 font-mono text-sm\">No events found for this filter.</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"space-y-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"space-y-2.5 sm:space-y-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -419,7 +419,7 @@ func EventCard(event db.ListUpcomingEventsRow) templ.Component {
 			templ_7745c5c3_Var23 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var24 = []any{"block rounded-md border border-slate-200 dark:border-[#262a34] bg-white dark:bg-[#15181f] p-4 sm:p-5 transition hover:border-slate-400 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-[#191d25] shadow-sm dark:shadow-none ", SeriesCardBorder(event.SerieID)}
+		var templ_7745c5c3_Var24 = []any{"block rounded-lg border border-slate-200 dark:border-[#262a34] bg-white dark:bg-[#15181f] p-3.5 sm:p-5 transition hover:border-slate-400 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-[#191d25] shadow-sm dark:shadow-none ", SeriesCardBorder(event.SerieID)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var24...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -450,7 +450,7 @@ func EventCard(event db.ListUpcomingEventsRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\"><div class=\"flex flex-col sm:flex-row sm:items-center justify-between gap-3\"><div class=\"space-y-1\"><div class=\"flex items-center gap-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\"><div class=\"flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3\"><div class=\"space-y-0.5 sm:space-y-1\"><div class=\"flex items-center gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -521,7 +521,7 @@ func EventCard(event db.ListUpcomingEventsRow) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</div><h3 class=\"text-base sm:text-lg font-bold text-slate-900 dark:text-slate-200 tracking-tight\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</div><h3 class=\"text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-slate-200 tracking-tight leading-snug\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -547,7 +547,7 @@ func EventCard(event db.ListUpcomingEventsRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</p></div><div class=\"flex sm:flex-col items-end justify-between sm:justify-center border-t sm:border-t-0 border-slate-100 dark:border-[#262a34] pt-2 sm:pt-0 font-mono text-xs\"><span class=\"font-bold text-slate-900 dark:text-slate-200\" data-utc=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</p></div><div class=\"flex sm:flex-col items-end justify-between sm:justify-center border-t sm:border-t-0 border-slate-100 dark:border-[#262a34] pt-2 sm:pt-0 font-mono text-[11px] sm:text-xs\"><span class=\"font-bold text-slate-900 dark:text-slate-200\" data-utc=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

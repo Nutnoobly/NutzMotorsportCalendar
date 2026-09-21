@@ -7,38 +7,38 @@ import (
 
 templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db.ListResultsByEventIDRow) {
 	@Layout(EventDetailMeta(event)) {
-		<div class="space-y-8 max-w-5xl mx-auto">
+		<div class="space-y-5 sm:space-y-8 max-w-5xl mx-auto">
 			<!-- Back Navigation -->
 			<div>
 				<a
 					href="/"
-					class="inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+					class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
 				>
 					<span>&larr;</span> Back to Calendar
 				</a>
 			</div>
 
 			<!-- Event Header Card -->
-			<div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 p-6 sm:p-8 shadow-md dark:shadow-2xl transition-colors duration-200">
+			<div class="rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 p-4 sm:p-6 lg:p-8 shadow-md dark:shadow-2xl transition-colors duration-200">
 				<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-					<div class="space-y-2">
-						<div class="flex items-center gap-2.5 flex-wrap">
-							<span class={ "px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider", SeriesBadgeClass(event.SerieID) }>
+					<div class="space-y-1.5 sm:space-y-2">
+						<div class="flex items-center gap-2 flex-wrap">
+							<span class={ "px-2 py-0.5 rounded text-[11px] sm:text-xs font-bold uppercase tracking-wider", SeriesBadgeClass(event.SerieID) }>
 								{ event.SerieID }
 							</span>
 							<span class="text-xs font-semibold text-slate-500 dark:text-slate-400">
 								Season { fmt.Sprintf("%d", event.EventSeason) } &bull; Round { fmt.Sprintf("%d", event.EventRound) }
 							</span>
-							<span class={ "px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider", StatusBadgeClass(event.EventStatus) }>
+							<span class={ "px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold uppercase tracking-wider", StatusBadgeClass(event.EventStatus) }>
 								{ event.EventStatus }
 							</span>
 						</div>
 
-						<h1 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+						<h1 class="text-xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
 							{ event.EventName }
 						</h1>
 
-						<p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 flex items-center gap-2">
+						<p class="text-xs sm:text-sm lg:text-base text-slate-600 dark:text-slate-400 flex items-center gap-1.5 sm:gap-2 flex-wrap">
 							<span>📍</span>
 							<span class="text-slate-900 dark:text-white font-medium">{ event.CircuitName }</span>
 							if TextString(event.CircuitLocality, "") != "" {
@@ -52,9 +52,9 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 						</p>
 					</div>
 
-					<div class="sm:text-right shrink-0">
-						<div class="text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">Race Weekend</div>
-						<div class="text-lg font-bold text-slate-900 dark:text-white font-mono mt-0.5" data-utc={ ISOTimestamp(event.EventStartsAt) } data-format="date">
+					<div class="sm:text-right shrink-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800/80 pt-3 sm:pt-0">
+						<div class="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">Race Weekend</div>
+						<div class="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-mono mt-0.5" data-utc={ ISOTimestamp(event.EventStartsAt) } data-format="date">
 							{ FormatDate(event.EventStartsAt) }
 						</div>
 						<div class="text-xs text-slate-500 dark:text-slate-400 font-mono" data-utc={ ISOTimestamp(event.EventStartsAt) } data-format="time">
@@ -65,13 +65,13 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 
 				<!-- Official Links -->
 				if TextString(event.EventOfficialUrl, "") != "" || TextString(event.EventTicketUrl, "") != "" {
-					<div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-4 flex-wrap">
+					<div class="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-3 sm:gap-4 flex-wrap text-xs">
 						if TextString(event.EventOfficialUrl, "") != "" {
 							<a
 								href={ templ.SafeURL(TextString(event.EventOfficialUrl, "#")) }
 								target="_blank"
 								rel="noopener noreferrer"
-								class="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 underline underline-offset-4"
+								class="inline-flex items-center gap-1.5 font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 underline underline-offset-4"
 							>
 								Official Event Site &nearr;
 							</a>
@@ -81,7 +81,7 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 								href={ templ.SafeURL(TextString(event.EventTicketUrl, "#")) }
 								target="_blank"
 								rel="noopener noreferrer"
-								class="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 underline underline-offset-4"
+								class="inline-flex items-center gap-1.5 font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 underline underline-offset-4"
 							>
 								Buy Tickets &nearr;
 							</a>
@@ -92,18 +92,18 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 
 			<!-- Race Recap Hero Banner (if event is completed & has results) -->
 			if event.EventStatus == "completed" && GenerateRaceSummary(results) != "" {
-				<div class="rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent p-6 sm:p-7 shadow-sm">
-					<div class="flex items-start gap-4">
-						<div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xl shrink-0">
+				<div class="rounded-xl sm:rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent p-4 sm:p-6 shadow-sm">
+					<div class="flex items-start gap-3 sm:gap-4">
+						<div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-base sm:text-xl shrink-0">
 							🏆
 						</div>
-						<div class="space-y-1.5">
+						<div class="space-y-1">
 							<div class="flex items-center gap-2">
-								<span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+								<span class="text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
 									Official Race Summary
 								</span>
 							</div>
-							<p class="text-base sm:text-lg font-medium text-slate-900 dark:text-slate-100 leading-snug">
+							<p class="text-sm sm:text-base lg:text-lg font-medium text-slate-900 dark:text-slate-100 leading-snug">
 								{ GenerateRaceSummary(results) }
 							</p>
 						</div>
@@ -112,11 +112,11 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 			}
 
 			<!-- Grid: Timetable & Podium Results -->
-			<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+			<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
 				<!-- Weekend Timetable -->
-				<section class="lg:col-span-6 space-y-4">
+				<section class="lg:col-span-6 space-y-3 sm:space-y-4">
 					<div class="flex items-center justify-between">
-						<h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+						<h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
 							<span>⏱️</span> Weekend Timetable
 						</h2>
 						<span class="text-xs text-slate-500 font-mono">Times in <span class="tz-abbr">UTC</span></span>
@@ -129,32 +129,38 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 					} else {
 						<div class="rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 divide-y divide-slate-100 dark:divide-slate-800/60 overflow-hidden shadow-sm dark:shadow-none">
 							for _, sess := range sessions {
-								<div class="p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-colors">
-									<div class="space-y-1">
-										<div class="flex items-center gap-2">
-											<span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
+								<div class="p-3 sm:p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-colors gap-2.5">
+									<div class="space-y-0.5 sm:space-y-1">
+										<div class="flex items-center gap-1.5 sm:gap-2">
+											<span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
 												{ sess.SessionKind }
 											</span>
-											<span class={ "text-[10px] font-mono font-semibold px-2 py-0.5 rounded border", SessionStatusBadgeClass(GetSessionStatus(sess.SessionStartsAt, event.EventStatus)) }>
+											<span class={ "text-[9px] sm:text-[10px] font-mono font-semibold px-1.5 sm:px-2 py-0.5 rounded border", SessionStatusBadgeClass(GetSessionStatus(sess.SessionStartsAt, event.EventStatus)) }>
 												{ GetSessionStatus(sess.SessionStartsAt, event.EventStatus) }
 											</span>
 										</div>
-										<span class="text-sm font-semibold text-slate-900 dark:text-white block">
+										<span class="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white block leading-snug">
 											{ sess.SessionName }
 										</span>
 										if winner := GetSessionWinner(sess.SessionKind, results); winner != nil {
-											<div class="text-xs text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1.5 pt-0.5">
-												<span>🏆 Winner:</span>
-												<span class="font-bold">{ winner.DriverFirstName } { winner.DriverLastName }</span>
+											<div class="text-[11px] sm:text-xs font-medium flex items-center gap-1.5 pt-0.5 flex-wrap">
+												if sess.SessionKind == "qualifying" {
+													<span class="text-amber-600 dark:text-amber-400 font-semibold">🎯 Pole:</span>
+												} else if sess.SessionKind == "practice" {
+													<span class="text-sky-600 dark:text-sky-400 font-semibold">⏱️ Fastest:</span>
+												} else {
+													<span class="text-amber-600 dark:text-amber-400 font-semibold">🏆 Winner:</span>
+												}
+												<span class="font-bold text-slate-900 dark:text-white">{ winner.DriverFirstName } { winner.DriverLastName }</span>
 												<span class="text-slate-400">({ winner.TeamName })</span>
 											</div>
 										}
 									</div>
-									<div class="text-right shrink-0">
-										<span class="text-xs font-mono font-medium text-slate-700 dark:text-slate-300 block" data-utc={ ISOTimestamp(sess.SessionStartsAt) } data-format="date">
+									<div class="text-right shrink-0 font-mono text-[11px] sm:text-xs">
+										<span class="font-medium text-slate-700 dark:text-slate-300 block" data-utc={ ISOTimestamp(sess.SessionStartsAt) } data-format="date">
 											{ FormatDate(sess.SessionStartsAt) }
 										</span>
-										<span class="text-xs font-mono text-slate-500 dark:text-slate-400" data-utc={ ISOTimestamp(sess.SessionStartsAt) } data-format="time">
+										<span class="text-slate-500 dark:text-slate-400" data-utc={ ISOTimestamp(sess.SessionStartsAt) } data-format="time">
 											{ FormatTimeUTC(sess.SessionStartsAt) }
 										</span>
 									</div>
@@ -165,19 +171,19 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 				</section>
 
 				<!-- Official Results / Podium -->
-				<section class="lg:col-span-6 space-y-4">
+				<section class="lg:col-span-6 space-y-3 sm:space-y-4">
 					<div class="flex items-center justify-between flex-wrap gap-2">
-						<h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+						<h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
 							<span>🏆</span> Podium &amp; Results
 						</h2>
 						if len(FilterResultsBySession(results, "sprint")) > 0 {
 							<!-- Filter Tabs for Sprint Weekend -->
-							<div class="inline-flex rounded-lg bg-slate-100 dark:bg-slate-900 p-1 border border-slate-200 dark:border-slate-800 text-xs font-mono font-bold">
+							<div class="inline-flex rounded-lg bg-slate-100 dark:bg-slate-900 p-0.5 sm:p-1 border border-slate-200 dark:border-slate-800 text-xs font-mono font-bold">
 								<button
 									type="button"
 									id="tab-btn-all"
 									onclick="switchResultsTab('all')"
-									class="px-2.5 py-1 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm transition"
+									class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm transition"
 								>
 									All
 								</button>
@@ -185,7 +191,7 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 									type="button"
 									id="tab-btn-race"
 									onclick="switchResultsTab('race')"
-									class="px-2.5 py-1 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
+									class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
 								>
 									Grand Prix
 								</button>
@@ -193,31 +199,31 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 									type="button"
 									id="tab-btn-sprint"
 									onclick="switchResultsTab('sprint')"
-									class="px-2.5 py-1 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
+									class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
 								>
 									Sprint
 								</button>
 							</div>
 						} else if len(results) > 0 {
-							<span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20">
+							<span class="text-[11px] sm:text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20">
 								Official
 							</span>
 						}
 					</div>
 
 					if len(results) == 0 {
-						<div class="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/20 p-8 text-center">
-							<div class="text-2xl mb-2">🏁</div>
-							<p class="text-sm font-medium text-slate-900 dark:text-white">Results Pending</p>
-							<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+						<div class="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/20 p-6 sm:p-8 text-center">
+							<div class="text-xl sm:text-2xl mb-1.5 sm:mb-2">🏁</div>
+							<p class="text-xs sm:text-sm font-medium text-slate-900 dark:text-white">Results Pending</p>
+							<p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1">
 								Podium standings and classification will appear here following the race.
 							</p>
 						</div>
 					} else {
-						<div class="space-y-6">
+						<div class="space-y-4 sm:space-y-6">
 							<!-- Grand Prix Race Results -->
 							if len(FilterResultsBySession(results, "race")) > 0 {
-								<div id="results-race-group" class="space-y-3">
+								<div id="results-race-group" class="space-y-2.5 sm:space-y-3">
 									if len(FilterResultsBySession(results, "sprint")) > 0 {
 										<div class="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-800/80">
 											<h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
@@ -228,7 +234,7 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 											</span>
 										</div>
 									}
-									<div class="space-y-3">
+									<div class="space-y-2 sm:space-y-3">
 										for _, res := range FilterResultsBySession(results, "race") {
 											@ResultCard(res)
 										}
@@ -238,7 +244,7 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 
 							<!-- Sprint Race Results -->
 							if len(FilterResultsBySession(results, "sprint")) > 0 {
-								<div id="results-sprint-group" class="space-y-3">
+								<div id="results-sprint-group" class="space-y-2.5 sm:space-y-3">
 									<div class="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-800/80">
 										<h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
 											<span>⚡</span> Sprint Race
@@ -247,7 +253,7 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 											Saturday Sprint
 										</span>
 									</div>
-									<div class="space-y-3">
+									<div class="space-y-2 sm:space-y-3">
 										for _, res := range FilterResultsBySession(results, "sprint") {
 											@ResultCard(res)
 										}
@@ -266,8 +272,8 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 									const btnSprint = document.getElementById('tab-btn-sprint');
 									if (!raceGroup || !sprintGroup) return;
 
-									const inactiveClass = 'px-2.5 py-1 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition';
-									const activeClass = 'px-2.5 py-1 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm transition';
+									const inactiveClass = 'px-2 py-0.5 sm:px-2.5 sm:py-1 rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition';
+									const activeClass = 'px-2 py-0.5 sm:px-2.5 sm:py-1 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm transition';
 
 									[btnAll, btnRace, btnSprint].forEach(b => { if (b) b.className = inactiveClass; });
 
@@ -296,30 +302,30 @@ templ EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []d
 
 // ResultCard renders a single podium/result card.
 templ ResultCard(res db.ListResultsByEventIDRow) {
-	<div class={ "rounded-xl border p-4 flex items-center justify-between shadow-sm dark:shadow-none",
+	<div class={ "rounded-lg sm:rounded-xl border p-2.5 sm:p-3.5 flex items-center justify-between shadow-sm dark:shadow-none gap-2",
 		templ.KV("border-amber-500/40 bg-amber-500/5", res.ResultPosition == 1),
 		templ.KV("border-slate-400/30 bg-slate-400/5", res.ResultPosition == 2),
 		templ.KV("border-amber-700/40 bg-amber-700/5", res.ResultPosition == 3),
 		templ.KV("border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40", res.ResultPosition > 3) }>
-		<div class="flex items-center gap-3.5">
+		<div class="flex items-center gap-2.5 sm:gap-3.5">
 			<!-- Position Badge -->
-			<div class={ "w-9 h-9 rounded-lg flex items-center justify-center font-mono text-base border", PositionBadgeClass(res.ResultPosition) }>
+			<div class={ "w-7 h-7 sm:w-9 sm:h-9 rounded-md sm:rounded-lg flex items-center justify-center font-mono text-xs sm:text-base border shrink-0", PositionBadgeClass(res.ResultPosition) }>
 				{ fmt.Sprintf("%d", res.ResultPosition) }
 			</div>
 
 			<!-- Driver & Team Details -->
 			<div>
-				<div class="flex items-center gap-1.5">
-					<span class="text-sm font-bold text-slate-900 dark:text-white">
+				<div class="flex items-center gap-1.5 flex-wrap">
+					<span class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
 						{ res.DriverFirstName } { res.DriverLastName }
 					</span>
 					if TextString(res.DriverCode, "") != "" {
-						<span class="text-[11px] font-mono text-slate-500 dark:text-slate-400 font-semibold">
+						<span class="text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 font-semibold">
 							({ TextString(res.DriverCode, "") })
 						</span>
 					}
 				</div>
-				<div class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
+				<div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5 flex-wrap">
 					<span>{ res.TeamName }</span>
 					if res.DriverNumber.Valid {
 						<span>&bull;</span>
@@ -330,12 +336,12 @@ templ ResultCard(res db.ListResultsByEventIDRow) {
 		</div>
 
 		<!-- Gap & Points -->
-		<div class="text-right">
-			<div class="text-xs font-mono font-medium text-slate-700 dark:text-slate-300">
+		<div class="text-right shrink-0 font-mono">
+			<div class="text-[11px] sm:text-xs font-medium text-slate-700 dark:text-slate-300">
 				{ TextString(res.ResultTimeOrGap, "Leader") }
 			</div>
 			if res.ResultPoints.Valid && res.ResultPoints.Float64 > 0 {
-				<div class="text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-semibold mt-0.5">
+				<div class="text-[10px] sm:text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold mt-0.5">
 					+{ FloatString(res.ResultPoints) } pts
 				</div>
 			}

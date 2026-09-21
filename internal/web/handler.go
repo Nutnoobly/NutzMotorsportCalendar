@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/db"
@@ -61,6 +62,33 @@ func (s *Server) handleHome(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+var (
+	lastEventRefreshMu sync.Mutex
+	lastEventRefresh   = make(map[string]time.Time)
+)
+
+// ShouldTriggerEventRefresh determines if an active or recent event needs an on-demand background refresh.
+func ShouldTriggerEventRefresh(event db.GetEventBySlugRow, results []db.ListResultsByEventIDRow) bool {
+	if len(results) > 0 && event.EventStatus == "completed" {
+		return false
+	}
+	now := time.Now()
+	// If event started within last 6 hours or is scheduled for today (within next 2 hours)
+	if event.EventStartsAt.Valid {
+		diff := now.Sub(event.EventStartsAt.Time)
+		if diff >= -2*time.Hour && diff <= 6*time.Hour {
+			lastEventRefreshMu.Lock()
+			defer lastEventRefreshMu.Unlock()
+			lastTime, seen := lastEventRefresh[event.EventSlug]
+			if !seen || now.Sub(lastTime) > 5*time.Minute {
+				lastEventRefresh[event.EventSlug] = now
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // handleEventDetail renders the event detail page by slug.
 func (s *Server) handleEventDetail(w http.ResponseWriter, r *http.Request) {
 	slug := r.PathValue("slug")
@@ -77,6 +105,18 @@ func (s *Server) handleEventDetail(w http.ResponseWriter, r *http.Request) {
 
 	sessions, _ := s.queries.ListSessionsByEventID(r.Context(), event.EventID)
 	results, _ := s.queries.ListResultsByEventID(r.Context(), event.EventID)
+
+	if ShouldTriggerEventRefresh(event, results) {
+		go func(serieID string) {
+			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+			defer cancel()
+			if serieID == "f1" {
+				_ = fetcher.SyncF1(ctx, s.queries)
+			} else if serieID == "motogp" {
+				_ = fetcher.SyncMotoGP(ctx, s.queries)
+			}
+		}(event.SerieID)
+	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := views.EventDetail(event, sessions, results).Render(r.Context(), w); err != nil {

@@ -281,6 +281,11 @@ func SyncMotoGP(ctx context.Context, queries *db.Queries) error {
 		if len(sessions) > 0 {
 			_ = queries.DeleteSessionsByEventID(ctx, eventID)
 
+			// Sort sessions chronologically so final sessions (e.g. Q2) overwrite preliminary ones (e.g. Q1)
+			sort.Slice(sessions, func(i, j int) bool {
+				return sessions[i].Date < sessions[j].Date
+			})
+
 			var raceSessionTime time.Time
 
 			for _, sess := range sessions {
@@ -328,14 +333,22 @@ func SyncMotoGP(ctx context.Context, queries *db.Queries) error {
 					SessionStartsAt: pgtype.Timestamptz{Time: sessTime, Valid: true},
 				})
 
-				// D. If session is RAC or SPR and completed, fetch classification
-				if (sess.Type == "RAC" || sess.Type == "SPR") && (eventStatus == "completed" || sess.Status == "FINISHED") {
+				// D. If session is RAC, SPR, Q, FP, or PR and completed, fetch classification
+				isRaceOrSprint := sess.Type == "RAC" || sess.Type == "SPR"
+				isQualiOrPractice := strings.HasPrefix(sess.Type, "Q") || strings.HasPrefix(sess.Type, "FP") || sess.Type == "PR"
+
+				if (isRaceOrSprint || isQualiOrPractice) && (eventStatus == "completed" || sess.Status == "FINISHED") {
 					classURL := fmt.Sprintf("%s/session/%s/classification", motogpBaseURL, sess.ID)
 					var classResp motogpClassificationResponse
 					if err := motogpGet(ctx, client, classURL, &classResp); err == nil && len(classResp.Classification) > 0 {
 						sessionType := "race"
-						if sess.Type == "SPR" {
+						switch {
+						case sess.Type == "SPR":
 							sessionType = "sprint"
+						case strings.HasPrefix(sess.Type, "Q"):
+							sessionType = "qualifying"
+						case strings.HasPrefix(sess.Type, "FP") || sess.Type == "PR":
+							sessionType = "practice"
 						}
 
 						for _, row := range classResp.Classification {

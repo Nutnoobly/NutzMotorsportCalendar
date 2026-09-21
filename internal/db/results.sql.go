@@ -11,6 +11,67 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const getSessionResultP1 = `-- name: GetSessionResultP1 :one
+SELECT 
+    r.event_id,
+    r.session_type,
+    r.result_position,
+    r.driver_id,
+    r.team_id,
+    r.result_time_or_gap,
+    r.result_points,
+    d.driver_first_name,
+    d.driver_last_name,
+    d.driver_code,
+    d.driver_number,
+    t.team_name
+FROM RESULTS r
+JOIN DRIVERS d ON r.driver_id = d.driver_id
+JOIN TEAMS t ON r.team_id = t.team_id
+WHERE r.event_id = $1 AND r.session_type = $2 AND r.result_position = 1
+LIMIT 1
+`
+
+type GetSessionResultP1Params struct {
+	EventID     int32  `json:"event_id"`
+	SessionType string `json:"session_type"`
+}
+
+type GetSessionResultP1Row struct {
+	EventID         int32         `json:"event_id"`
+	SessionType     string        `json:"session_type"`
+	ResultPosition  int32         `json:"result_position"`
+	DriverID        int32         `json:"driver_id"`
+	TeamID          int32         `json:"team_id"`
+	ResultTimeOrGap pgtype.Text   `json:"result_time_or_gap"`
+	ResultPoints    pgtype.Float8 `json:"result_points"`
+	DriverFirstName string        `json:"driver_first_name"`
+	DriverLastName  string        `json:"driver_last_name"`
+	DriverCode      pgtype.Text   `json:"driver_code"`
+	DriverNumber    pgtype.Int4   `json:"driver_number"`
+	TeamName        string        `json:"team_name"`
+}
+
+func (q *Queries) GetSessionResultP1(ctx context.Context, arg GetSessionResultP1Params) (GetSessionResultP1Row, error) {
+	row := q.db.QueryRow(ctx, getSessionResultP1, arg.EventID, arg.SessionType)
+	var i GetSessionResultP1Row
+	err := row.Scan(
+		&i.EventID,
+		&i.SessionType,
+		&i.ResultPosition,
+		&i.DriverID,
+		&i.TeamID,
+		&i.ResultTimeOrGap,
+		&i.ResultPoints,
+		&i.DriverFirstName,
+		&i.DriverLastName,
+		&i.DriverCode,
+		&i.DriverNumber,
+		&i.TeamName,
+	)
+	return i, err
+}
+
 const listResultsByEventID = `-- name: ListResultsByEventID :many
 SELECT 
     r.event_id,
