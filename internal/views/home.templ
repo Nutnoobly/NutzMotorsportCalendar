@@ -22,55 +22,58 @@ templ Home(selectedSeries string, events []db.ListUpcomingEventsRow) {
 
 // CountdownWidget renders the telemetry timing block for the next race.
 templ CountdownWidget(event *db.ListUpcomingEventsRow) {
-	<div class="relative overflow-hidden rounded-lg border border-[#262a34] bg-[#15181f] p-6 sm:p-8 telemetry-grid">
+	<div class="relative overflow-hidden rounded-lg border border-slate-200 dark:border-[#262a34] bg-white dark:bg-[#15181f] p-6 sm:p-8 telemetry-grid shadow-sm dark:shadow-none transition-colors duration-200">
 		if event != nil {
-			<div id="telemetry-hud" data-target-time={ event.EventStartsAt.Time.Format(time.RFC3339) } class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+			<div id="telemetry-hud" data-target-time={ ISOTimestamp(event.EventStartsAt) } class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
 				<!-- Left: Event Context -->
 				<div class="lg:col-span-6 space-y-3">
 					<div class="flex items-center gap-2.5">
 						<span class={ "inline-block px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider text-white ", SeriesBadgeClass(event.SerieID) }>
 							{ event.SerieID }
 						</span>
-						<span class="text-xs font-mono text-slate-400">
+						<span class="text-xs font-mono text-slate-500 dark:text-slate-400">
 							Round { fmt.Sprint(event.EventRound) } &bull; Season { fmt.Sprint(event.EventSeason) }
 						</span>
 					</div>
-					<h2 class="text-2xl sm:text-3xl font-black text-slate-100 tracking-tight leading-snug">
-						<a href={ templ.SafeURL(fmt.Sprintf("/events/%s", event.EventSlug)) } class="hover:underline decoration-slate-600">
+					<h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight leading-snug">
+						<a href={ templ.SafeURL(fmt.Sprintf("/events/%s", event.EventSlug)) } class="hover:underline decoration-slate-400 dark:decoration-slate-600">
 							{ event.EventName }
 						</a>
 					</h2>
-					<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-400 font-mono">
+					<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-slate-400 font-mono">
 						<span>{ event.CircuitName }, { TextString(event.CircuitCountry, "") }</span>
 						<span>&bull;</span>
-						<span class="text-slate-300" data-utc={ ISOTimestamp(event.EventStartsAt) } data-format="datetime">{ FormatDateTime(event.EventStartsAt) }</span>
+						<span class="text-slate-800 dark:text-slate-300" data-utc={ ISOTimestamp(event.EventStartsAt) } data-format="datetime">{ FormatDateTime(event.EventStartsAt) }</span>
 					</div>
 				</div>
 
 				<!-- Right: Telemetry Counter -->
 				<div class="lg:col-span-6 flex flex-col items-start lg:items-end gap-3">
 					<div class="flex items-center justify-between w-full lg:w-auto gap-4">
-						<span class="text-xs font-mono text-slate-400 uppercase tracking-wider">T-Minus to Race Start</span>
-						<div id="hud-status" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-mono font-semibold bg-emerald-950/70 text-emerald-400 border border-emerald-800/60">
-							<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+						<div class="flex items-center gap-2">
+							<span class="text-xs font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider">T-Minus to Race Start</span>
+							<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold tz-abbr">UTC</span>
+						</div>
+						<div id="hud-status" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-mono font-semibold bg-emerald-100/80 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800/60">
+							<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
 							UPCOMING
 						</div>
 					</div>
 					<div class="grid grid-cols-4 gap-2 sm:gap-3 w-full sm:w-auto font-mono text-center">
-						<div class="bg-[#0f1115] border border-[#262a34] rounded px-3 py-2.5 min-w-[64px] sm:min-w-[78px]">
-							<div id="hud-days" class="text-2xl sm:text-4xl font-black text-slate-100 tabular-nums">00</div>
+						<div class="bg-slate-100 dark:bg-[#0f1115] border border-slate-200 dark:border-[#262a34] rounded px-3 py-2.5 min-w-[64px] sm:min-w-[78px] transition-colors">
+							<div id="hud-days" class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-slate-100 tabular-nums">00</div>
 							<div class="text-[10px] text-slate-500 uppercase font-semibold mt-0.5">Days</div>
 						</div>
-						<div class="bg-[#0f1115] border border-[#262a34] rounded px-3 py-2.5 min-w-[64px] sm:min-w-[78px]">
-							<div id="hud-hours" class="text-2xl sm:text-4xl font-black text-slate-100 tabular-nums">00</div>
+						<div class="bg-slate-100 dark:bg-[#0f1115] border border-slate-200 dark:border-[#262a34] rounded px-3 py-2.5 min-w-[64px] sm:min-w-[78px] transition-colors">
+							<div id="hud-hours" class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-slate-100 tabular-nums">00</div>
 							<div class="text-[10px] text-slate-500 uppercase font-semibold mt-0.5">Hours</div>
 						</div>
-						<div class="bg-[#0f1115] border border-[#262a34] rounded px-3 py-2.5 min-w-[64px] sm:min-w-[78px]">
-							<div id="hud-minutes" class="text-2xl sm:text-4xl font-black text-slate-100 tabular-nums">00</div>
+						<div class="bg-slate-100 dark:bg-[#0f1115] border border-slate-200 dark:border-[#262a34] rounded px-3 py-2.5 min-w-[64px] sm:min-w-[78px] transition-colors">
+							<div id="hud-minutes" class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-slate-100 tabular-nums">00</div>
 							<div class="text-[10px] text-slate-500 uppercase font-semibold mt-0.5">Mins</div>
 						</div>
-						<div class="bg-[#0f1115] border border-[#262a34] rounded px-3 py-2.5 min-w-[64px] sm:min-w-[78px]">
-							<div id="hud-seconds" class="text-2xl sm:text-4xl font-black text-slate-100 tabular-nums">00</div>
+						<div class="bg-slate-100 dark:bg-[#0f1115] border border-slate-200 dark:border-[#262a34] rounded px-3 py-2.5 min-w-[64px] sm:min-w-[78px] transition-colors">
+							<div id="hud-seconds" class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-slate-100 tabular-nums">00</div>
 							<div class="text-[10px] text-slate-500 uppercase font-semibold mt-0.5">Secs</div>
 						</div>
 					</div>
@@ -79,7 +82,7 @@ templ CountdownWidget(event *db.ListUpcomingEventsRow) {
 		} else {
 			<div class="text-center py-6 space-y-2">
 				<div class="text-xs font-mono uppercase tracking-wider text-slate-500">Season Status</div>
-				<div class="text-lg font-bold text-slate-300">No upcoming races scheduled. Check back soon.</div>
+				<div class="text-lg font-bold text-slate-700 dark:text-slate-300">No upcoming races scheduled. Check back soon.</div>
 			</div>
 		}
 	</div>
@@ -89,15 +92,15 @@ templ CountdownWidget(event *db.ListUpcomingEventsRow) {
 templ EventsSection(selectedSeries string, events []db.ListUpcomingEventsRow) {
 	<div id="calendar-section" class="space-y-6">
 		<!-- Filter Bar -->
-		<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#262a34]">
+		<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-[#262a34] transition-colors">
 			<!-- Filter Tabs with HTMX Swapping -->
-			<div class="inline-flex rounded bg-[#15181f] p-1 border border-[#262a34]">
+			<div class="inline-flex rounded bg-slate-100 dark:bg-[#15181f] p-1 border border-slate-200 dark:border-[#262a34] transition-colors">
 				<button
 					hx-get="/"
 					hx-target="#calendar-section"
 					hx-swap="outerHTML transition:true"
 					hx-push-url="true"
-					class={ "px-4 py-1.5 rounded text-xs font-mono font-bold transition ", templ.KV("bg-slate-700 text-white", selectedSeries == ""), templ.KV("text-slate-400 hover:text-slate-200", selectedSeries != "") }
+					class={ "px-4 py-1.5 rounded text-xs font-mono font-bold transition ", templ.KV("bg-slate-900 dark:bg-slate-700 text-white", selectedSeries == ""), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "") }
 				>
 					ALL
 				</button>
@@ -106,7 +109,7 @@ templ EventsSection(selectedSeries string, events []db.ListUpcomingEventsRow) {
 					hx-target="#calendar-section"
 					hx-swap="outerHTML transition:true"
 					hx-push-url="true"
-					class={ "px-4 py-1.5 rounded text-xs font-mono font-bold transition ", templ.KV("bg-[#e10600] text-white", selectedSeries == "f1"), templ.KV("text-slate-400 hover:text-slate-200", selectedSeries != "f1") }
+					class={ "px-4 py-1.5 rounded text-xs font-mono font-bold transition ", templ.KV("bg-[#e10600] text-white", selectedSeries == "f1"), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "f1") }
 				>
 					F1
 				</button>
@@ -115,7 +118,7 @@ templ EventsSection(selectedSeries string, events []db.ListUpcomingEventsRow) {
 					hx-target="#calendar-section"
 					hx-swap="outerHTML transition:true"
 					hx-push-url="true"
-					class={ "px-4 py-1.5 rounded text-xs font-mono font-bold transition ", templ.KV("bg-[#0090d0] text-white", selectedSeries == "motogp"), templ.KV("text-slate-400 hover:text-slate-200", selectedSeries != "motogp") }
+					class={ "px-4 py-1.5 rounded text-xs font-mono font-bold transition ", templ.KV("bg-[#0090d0] text-white", selectedSeries == "motogp"), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "motogp") }
 				>
 					MOTOGP
 				</button>
@@ -124,11 +127,11 @@ templ EventsSection(selectedSeries string, events []db.ListUpcomingEventsRow) {
 			<!-- Calendar Export Feeds -->
 			<div class="flex items-center gap-3 text-xs font-mono">
 				<span class="text-slate-500">Subscribe:</span>
-				<a href="/series/f1/calendar.ics" class="text-slate-400 hover:text-[#e10600] transition">
+				<a href="/series/f1/calendar.ics" class="text-slate-600 dark:text-slate-400 hover:text-[#e10600] transition">
 					.ics (F1)
 				</a>
-				<span class="text-slate-700">|</span>
-				<a href="/series/motogp/calendar.ics" class="text-slate-400 hover:text-[#0090d0] transition">
+				<span class="text-slate-300 dark:text-slate-700">|</span>
+				<a href="/series/motogp/calendar.ics" class="text-slate-600 dark:text-slate-400 hover:text-[#0090d0] transition">
 					.ics (MotoGP)
 				</a>
 			</div>
@@ -136,7 +139,7 @@ templ EventsSection(selectedSeries string, events []db.ListUpcomingEventsRow) {
 
 		<!-- Race List -->
 		if len(events) == 0 {
-			<div class="text-center py-16 border border-dashed border-[#262a34] rounded-lg text-slate-500 font-mono text-sm">
+			<div class="text-center py-16 border border-dashed border-slate-300 dark:border-[#262a34] rounded-lg text-slate-500 font-mono text-sm">
 				No events found for this filter.
 			</div>
 		} else {
@@ -153,7 +156,7 @@ templ EventsSection(selectedSeries string, events []db.ListUpcomingEventsRow) {
 templ EventCard(event db.ListUpcomingEventsRow) {
 	<a
 		href={ templ.SafeURL(fmt.Sprintf("/events/%s", event.EventSlug)) }
-		class={ "block rounded-md border border-[#262a34] bg-[#15181f] p-4 sm:p-5 transition hover:border-slate-600 hover:bg-[#191d25] ", SeriesCardBorder(event.SerieID) }
+		class={ "block rounded-md border border-slate-200 dark:border-[#262a34] bg-white dark:bg-[#15181f] p-4 sm:p-5 transition hover:border-slate-400 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-[#191d25] shadow-sm dark:shadow-none ", SeriesCardBorder(event.SerieID) }
 	>
 		<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 			<div class="space-y-1">
@@ -161,25 +164,25 @@ templ EventCard(event db.ListUpcomingEventsRow) {
 					<span class={ "inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white ", SeriesBadgeClass(event.SerieID) }>
 						{ event.SerieID }
 					</span>
-					<span class="text-xs font-mono text-slate-400">
+					<span class="text-xs font-mono text-slate-500 dark:text-slate-400">
 						R{ fmt.Sprint(event.EventRound) }
 					</span>
 					if TextString(event.CircuitCountry, "") != "" {
-						<span class="text-xs font-mono text-slate-500">&bull;</span>
-						<span class="text-xs font-mono text-slate-400">
+						<span class="text-xs font-mono text-slate-400 dark:text-slate-500">&bull;</span>
+						<span class="text-xs font-mono text-slate-500 dark:text-slate-400">
 							{ TextString(event.CircuitCountry, "") }
 						</span>
 					}
 				</div>
-				<h3 class="text-base sm:text-lg font-bold text-slate-200 tracking-tight">
+				<h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-200 tracking-tight">
 					{ event.EventName }
 				</h3>
-				<p class="text-xs text-slate-400 font-mono">
+				<p class="text-xs text-slate-500 dark:text-slate-400 font-mono">
 					{ event.CircuitName }
 				</p>
 			</div>
-			<div class="flex sm:flex-col items-end justify-between sm:justify-center border-t sm:border-t-0 border-[#262a34] pt-2 sm:pt-0 font-mono text-xs">
-				<span class="font-bold text-slate-200" data-utc={ ISOTimestamp(event.EventStartsAt) } data-format="datetime">{ FormatDateTime(event.EventStartsAt) }</span>
+			<div class="flex sm:flex-col items-end justify-between sm:justify-center border-t sm:border-t-0 border-slate-100 dark:border-[#262a34] pt-2 sm:pt-0 font-mono text-xs">
+				<span class="font-bold text-slate-900 dark:text-slate-200" data-utc={ ISOTimestamp(event.EventStartsAt) } data-format="datetime">{ FormatDateTime(event.EventStartsAt) }</span>
 				<span class="text-slate-500 uppercase">{ event.EventStatus }</span>
 			</div>
 		</div>

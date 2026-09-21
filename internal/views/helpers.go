@@ -87,13 +87,13 @@ func StatusBadgeClass(status string) string {
 func PositionBadgeClass(pos int32) string {
 	switch pos {
 	case 1:
-		return "bg-amber-400/20 text-amber-300 border-amber-400/50 font-bold"
+		return "bg-amber-400/20 text-amber-600 dark:text-amber-300 border-amber-400/50 font-bold"
 	case 2:
-		return "bg-slate-300/20 text-slate-200 border-slate-300/50 font-bold"
+		return "bg-slate-300/20 text-slate-700 dark:text-slate-200 border-slate-300/50 font-bold"
 	case 3:
-		return "bg-amber-700/20 text-amber-500 border-amber-700/50 font-bold"
+		return "bg-amber-700/20 text-amber-700 dark:text-amber-500 border-amber-700/50 font-bold"
 	default:
-		return "bg-slate-800 text-slate-400 border-slate-700"
+		return "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700"
 	}
 }
 

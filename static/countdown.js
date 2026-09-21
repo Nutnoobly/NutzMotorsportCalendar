@@ -1,5 +1,64 @@
 // Live Telemetry Countdown Engine for NutzMotorsportCalendar
 (function () {
+  // Calculate difference in milliseconds between the active timezone and user's local system timezone
+  function getTimezoneOffsetDiffMs() {
+    if (!window.NutzTimezone || typeof window.NutzTimezone.getActive !== 'function') {
+      return 0;
+    }
+    const activeTz = window.NutzTimezone.getActive();
+    if (!activeTz || activeTz === 'auto') {
+      return 0;
+    }
+
+    try {
+      const now = new Date();
+      // Format now in target timezone
+      const targetParts = new Intl.DateTimeFormat('en-US', {
+        timeZone: activeTz,
+        year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', minute: 'numeric', second: 'numeric',
+        hour12: false
+      }).formatToParts(now);
+
+      // Format now in system/local timezone
+      const localParts = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', minute: 'numeric', second: 'numeric',
+        hour12: false
+      }).formatToParts(now);
+
+      const getVal = (parts, type) => {
+        const p = parts.find(x => x.type === type);
+        return p ? parseInt(p.value, 10) : 0;
+      };
+
+      const targetHour = getVal(targetParts, 'hour') % 24;
+      const localHour = getVal(localParts, 'hour') % 24;
+
+      const targetTime = Date.UTC(
+        getVal(targetParts, 'year'),
+        getVal(targetParts, 'month') - 1,
+        getVal(targetParts, 'day'),
+        targetHour,
+        getVal(targetParts, 'minute'),
+        getVal(targetParts, 'second')
+      );
+
+      const localTime = Date.UTC(
+        getVal(localParts, 'year'),
+        getVal(localParts, 'month') - 1,
+        getVal(localParts, 'day'),
+        localHour,
+        getVal(localParts, 'minute'),
+        getVal(localParts, 'second')
+      );
+
+      return targetTime - localTime;
+    } catch (e) {
+      return 0;
+    }
+  }
+
   function initCountdown() {
     const hud = document.getElementById('telemetry-hud');
     if (!hud) return;
@@ -18,7 +77,8 @@
 
     function update() {
       const now = new Date();
-      const diffMs = targetDate.getTime() - now.getTime();
+      const tzOffsetDiff = getTimezoneOffsetDiffMs();
+      const diffMs = (targetDate.getTime() - now.getTime()) + tzOffsetDiff;
 
       if (diffMs <= 0) {
         if (daysEl) daysEl.textContent = '00';
@@ -30,6 +90,11 @@
           statusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500 animate-live-led"></span> SESSION LIVE';
         }
         return;
+      }
+
+      if (statusEl && statusEl.textContent.includes('LIVE')) {
+        statusEl.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-mono font-semibold bg-emerald-100/80 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800/60';
+        statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400"></span> UPCOMING';
       }
 
       const totalSeconds = Math.floor(diffMs / 1000);
@@ -57,8 +122,11 @@
 
   document.body.addEventListener('htmx:afterSwap', function (evt) {
     if (evt.detail.target && evt.detail.target.id === 'calendar-section') {
-      // Retain or re-init countdown if refreshed
       initCountdown();
     }
+  });
+
+  window.addEventListener('nutz:timezone-changed', function () {
+    initCountdown();
   });
 })();

@@ -154,6 +154,7 @@
             localStorage.setItem(STORAGE_KEY, tz);
         }
         applyTimezones();
+        window.dispatchEvent(new CustomEvent("nutz:timezone-changed", { detail: { timezone: getActiveTimezone() } }));
     }
 
     // Expose API on window
@@ -179,7 +180,8 @@
     // Attach selector change handler
     function setupSelector() {
         const selector = document.getElementById("tz-selector");
-        if (!selector) return;
+        if (!selector || selector.dataset.initialized === "true") return;
+        selector.dataset.initialized = "true";
 
         // Populate auto option with detected timezone name
         const autoOpt = selector.querySelector('option[value="auto"]');

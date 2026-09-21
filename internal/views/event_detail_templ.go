@@ -46,7 +46,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-8 max-w-5xl mx-auto\"><!-- Back Navigation --><div><a href=\"/\" class=\"inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white transition-colors\"><span>&larr;</span> Back to Calendar</a></div><!-- Event Header Card --><div class=\"rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 p-6 sm:p-8 shadow-2xl\"><div class=\"flex flex-col sm:flex-row sm:items-center justify-between gap-4\"><div class=\"space-y-2\"><div class=\"flex items-center gap-2.5 flex-wrap\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-8 max-w-5xl mx-auto\"><!-- Back Navigation --><div><a href=\"/\" class=\"inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors\"><span>&larr;</span> Back to Calendar</a></div><!-- Event Header Card --><div class=\"rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 p-6 sm:p-8 shadow-md dark:shadow-2xl transition-colors duration-200\"><div class=\"flex flex-col sm:flex-row sm:items-center justify-between gap-4\"><div class=\"space-y-2\"><div class=\"flex items-center gap-2.5 flex-wrap\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -81,7 +81,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <span class=\"text-xs font-semibold text-slate-400\">Season ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <span class=\"text-xs font-semibold text-slate-500 dark:text-slate-400\">Season ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -142,7 +142,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span></div><h1 class=\"text-2xl sm:text-4xl font-black text-white tracking-tight\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span></div><h1 class=\"text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -155,14 +155,14 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</h1><p class=\"text-sm sm:text-base text-slate-400 flex items-center gap-2\"><span>📍</span> <span class=\"text-white font-medium\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</h1><p class=\"text-sm sm:text-base text-slate-600 dark:text-slate-400 flex items-center gap-2\"><span>📍</span> <span class=\"text-slate-900 dark:text-white font-medium\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(event.CircuitName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 43, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 43, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -210,14 +210,14 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</p></div><div class=\"sm:text-right shrink-0\"><div class=\"text-sm uppercase tracking-wider text-slate-400 font-semibold\">Race Weekend</div><div class=\"text-lg font-bold text-white font-mono mt-0.5\" data-utc=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</p></div><div class=\"sm:text-right shrink-0\"><div class=\"text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold\">Race Weekend</div><div class=\"text-lg font-bold text-slate-900 dark:text-white font-mono mt-0.5\" data-utc=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(ISOTimestamp(event.EventStartsAt))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 57, Col: 109}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 57, Col: 129}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 			if templ_7745c5c3_Err != nil {
@@ -236,14 +236,14 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</div><div class=\"text-xs text-slate-400 font-mono\" data-utc=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</div><div class=\"text-xs text-slate-500 dark:text-slate-400 font-mono\" data-utc=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue(ISOTimestamp(event.EventStartsAt))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 60, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 60, Col: 116}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
 			if templ_7745c5c3_Err != nil {
@@ -267,7 +267,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 				return templ_7745c5c3_Err
 			}
 			if TextString(event.EventOfficialUrl, "") != "" || TextString(event.EventTicketUrl, "") != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"mt-6 pt-4 border-t border-slate-800/80 flex items-center gap-4 flex-wrap\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"mt-6 pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-4 flex-wrap\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -285,7 +285,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"inline-flex items-center gap-1.5 text-xs font-medium text-red-400 hover:text-red-300 underline underline-offset-4\">Official Event Site &nearr;</a> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"inline-flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 underline underline-offset-4\">Official Event Site &nearr;</a> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -304,7 +304,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"inline-flex items-center gap-1.5 text-xs font-medium text-amber-400 hover:text-amber-300 underline underline-offset-4\">Buy Tickets &nearr;</a>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 underline underline-offset-4\">Buy Tickets &nearr;</a>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -314,22 +314,22 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div><!-- Grid: Timetable & Podium Results --><div class=\"grid grid-cols-1 lg:grid-cols-12 gap-8\"><!-- Weekend Timetable --><section class=\"lg:col-span-6 space-y-4\"><div class=\"flex items-center justify-between\"><h2 class=\"text-lg font-bold text-white flex items-center gap-2\"><span>⏱️</span> Weekend Timetable</h2><span class=\"text-xs text-slate-500 font-mono\">Times in <span class=\"tz-abbr\">UTC</span></span></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div><!-- Grid: Timetable & Podium Results --><div class=\"grid grid-cols-1 lg:grid-cols-12 gap-8\"><!-- Weekend Timetable --><section class=\"lg:col-span-6 space-y-4\"><div class=\"flex items-center justify-between\"><h2 class=\"text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2\"><span>⏱️</span> Weekend Timetable</h2><span class=\"text-xs text-slate-500 font-mono\">Times in <span class=\"tz-abbr\">UTC</span></span></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(sessions) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"rounded-xl border border-slate-800 bg-slate-900/30 p-6 text-center text-sm text-slate-400\">No session timetable published yet.</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/30 p-6 text-center text-sm text-slate-600 dark:text-slate-400\">No session timetable published yet.</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<div class=\"rounded-xl border border-slate-800/80 bg-slate-900/40 divide-y divide-slate-800/60 overflow-hidden\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<div class=\"rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 divide-y divide-slate-100 dark:divide-slate-800/60 overflow-hidden shadow-sm dark:shadow-none\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, sess := range sessions {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<div class=\"p-4 flex items-center justify-between hover:bg-slate-900/60 transition-colors\"><div><span class=\"text-xs font-bold uppercase tracking-wider text-slate-400 block\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<div class=\"p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-colors\"><div><span class=\"text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -342,7 +342,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</span> <span class=\"text-sm font-semibold text-white\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</span> <span class=\"text-sm font-semibold text-slate-900 dark:text-white\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -355,14 +355,14 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</span></div><div class=\"text-right\"><span class=\"text-xs font-mono font-medium text-slate-300 block\" data-utc=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</span></div><div class=\"text-right\"><span class=\"text-xs font-mono font-medium text-slate-700 dark:text-slate-300 block\" data-utc=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var23 string
 					templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.ResolveAttributeValue(ISOTimestamp(sess.SessionStartsAt))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 121, Col: 120}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 121, Col: 140}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
 					if templ_7745c5c3_Err != nil {
@@ -381,14 +381,14 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</span> <span class=\"text-xs font-mono text-slate-400\" data-utc=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</span> <span class=\"text-xs font-mono text-slate-500 dark:text-slate-400\" data-utc=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var25 string
 					templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.ResolveAttributeValue(ISOTimestamp(sess.SessionStartsAt))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 124, Col: 102}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/event_detail.templ`, Line: 124, Col: 122}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
 					if templ_7745c5c3_Err != nil {
@@ -417,12 +417,12 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</section><!-- Official Results / Podium --><section class=\"lg:col-span-6 space-y-4\"><div class=\"flex items-center justify-between\"><h2 class=\"text-lg font-bold text-white flex items-center gap-2\"><span>🏆</span> Podium &amp; Results</h2>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</section><!-- Official Results / Podium --><section class=\"lg:col-span-6 space-y-4\"><div class=\"flex items-center justify-between\"><h2 class=\"text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2\"><span>🏆</span> Podium &amp; Results</h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(results) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20\">Official</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20\">Official</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -432,7 +432,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 				return templ_7745c5c3_Err
 			}
 			if len(results) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<div class=\"rounded-xl border border-dashed border-slate-800 bg-slate-900/20 p-8 text-center\"><div class=\"text-2xl mb-2\">🏁</div><p class=\"text-sm font-medium text-white\">Results Pending</p><p class=\"text-xs text-slate-400 mt-1\">Podium standings and classification will appear here following the race.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<div class=\"rounded-xl border border-dashed border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/20 p-8 text-center\"><div class=\"text-2xl mb-2\">🏁</div><p class=\"text-sm font-medium text-slate-900 dark:text-white\">Results Pending</p><p class=\"text-xs text-slate-500 dark:text-slate-400 mt-1\">Podium standings and classification will appear here following the race.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -442,11 +442,11 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					return templ_7745c5c3_Err
 				}
 				for _, res := range results {
-					var templ_7745c5c3_Var27 = []any{"rounded-xl border p-4 flex items-center justify-between",
+					var templ_7745c5c3_Var27 = []any{"rounded-xl border p-4 flex items-center justify-between shadow-sm dark:shadow-none",
 						templ.KV("border-amber-500/40 bg-amber-500/5", res.ResultPosition == 1),
 						templ.KV("border-slate-400/30 bg-slate-400/5", res.ResultPosition == 2),
 						templ.KV("border-amber-700/40 bg-amber-700/5", res.ResultPosition == 3),
-						templ.KV("border-slate-800 bg-slate-900/40", res.ResultPosition > 3)}
+						templ.KV("border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40", res.ResultPosition > 3)}
 					templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var27...)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -499,7 +499,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</div><!-- Driver & Team Details --><div><div class=\"flex items-center gap-1.5\"><span class=\"text-sm font-bold text-white\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</div><!-- Driver & Team Details --><div><div class=\"flex items-center gap-1.5\"><span class=\"text-sm font-bold text-slate-900 dark:text-white\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -530,7 +530,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 						return templ_7745c5c3_Err
 					}
 					if TextString(res.DriverCode, "") != "" {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<span class=\"text-[11px] font-mono text-slate-400 font-semibold\">(")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<span class=\"text-[11px] font-mono text-slate-500 dark:text-slate-400 font-semibold\">(")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -548,7 +548,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</div><div class=\"text-xs text-slate-400 flex items-center gap-1.5 mt-0.5\"><span>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</div><div class=\"text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5\"><span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -584,7 +584,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</div></div></div><!-- Gap & Points --><div class=\"text-right\"><div class=\"text-xs font-mono font-medium text-slate-300\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</div></div></div><!-- Gap & Points --><div class=\"text-right\"><div class=\"text-xs font-mono font-medium text-slate-700 dark:text-slate-300\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -602,7 +602,7 @@ func EventDetail(event db.GetEventBySlugRow, sessions []db.Session, results []db
 						return templ_7745c5c3_Err
 					}
 					if res.ResultPoints.Valid && res.ResultPoints.Float64 > 0 {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "<div class=\"text-[11px] font-mono text-emerald-400 font-semibold mt-0.5\">+")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "<div class=\"text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-semibold mt-0.5\">+")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
