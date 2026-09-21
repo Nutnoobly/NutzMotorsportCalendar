@@ -61,7 +61,10 @@
 
   function initCountdown() {
     const hud = document.getElementById('telemetry-hud');
-    if (!hud) return;
+    if (!hud) {
+      if (window._countdownInterval) clearInterval(window._countdownInterval);
+      return;
+    }
 
     const targetISO = hud.dataset.targetTime;
     if (!targetISO) return;
@@ -121,6 +124,12 @@
   }
 
   document.body.addEventListener('htmx:afterSwap', function (evt) {
+    if (evt.detail.target && evt.detail.target.id === 'calendar-section') {
+      initCountdown();
+    }
+  });
+
+  document.body.addEventListener('htmx:afterSettle', function (evt) {
     if (evt.detail.target && evt.detail.target.id === 'calendar-section') {
       initCountdown();
     }

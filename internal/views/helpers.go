@@ -370,4 +370,39 @@ func FilterResultsBySession(results []db.ListResultsByEventIDRow, sessionType st
 	return filtered
 }
 
+// FindNextEvent finds the closest upcoming or currently live race event.
+func FindNextEvent(events []db.ListUpcomingEventsRow) *db.ListUpcomingEventsRow {
+	now := time.Now()
+
+	// 1. Check for live event currently in progress (started within last 3 hours, not completed or cancelled)
+	for i := range events {
+		if events[i].EventStartsAt.Valid && events[i].EventStatus != "cancelled" && events[i].EventStatus != "completed" {
+			diff := now.Sub(events[i].EventStartsAt.Time)
+			if diff >= 0 && diff <= 3*time.Hour {
+				return &events[i]
+			}
+		}
+	}
+
+	// 2. Find first upcoming future event that is not cancelled
+	for i := range events {
+		if events[i].EventStartsAt.Valid && events[i].EventStartsAt.Time.After(now) && events[i].EventStatus != "cancelled" {
+			return &events[i]
+		}
+	}
+
+	// 3. Fallback to first non-cancelled event if any
+	for i := range events {
+		if events[i].EventStatus != "cancelled" {
+			return &events[i]
+		}
+	}
+
+	if len(events) > 0 {
+		return &events[0]
+	}
+
+	return nil
+}
+
 

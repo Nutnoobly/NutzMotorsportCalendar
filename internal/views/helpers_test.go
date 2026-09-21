@@ -540,4 +540,206 @@ func TestSeriesBadgeClass(t *testing.T) {
 	}
 }
 
+func TestFindNextEvent(t *testing.T) {
+	now := time.Now()
+
+	t.Run("empty list returns nil", func(t *testing.T) {
+		res := views.FindNextEvent(nil)
+		if res != nil {
+			t.Errorf("expected nil for empty slice, got %+v", res)
+		}
+	})
+
+	t.Run("mixed list selects closest upcoming event", func(t *testing.T) {
+		events := []db.ListUpcomingEventsRow{
+			{
+				EventID:       1,
+				SerieID:       "motogp",
+				EventName:     "Indonesian GP",
+				EventStartsAt: pgtype.Timestamptz{Time: now.Add(48 * time.Hour), Valid: true},
+				EventStatus:   "scheduled",
+			},
+			{
+				EventID:       2,
+				SerieID:       "f1",
+				EventName:     "Singapore GP",
+				EventStartsAt: pgtype.Timestamptz{Time: now.Add(96 * time.Hour), Valid: true},
+				EventStatus:   "scheduled",
+			},
+		}
+
+		next := views.FindNextEvent(events)
+		if next == nil || next.EventID != 1 || next.SerieID != "motogp" {
+			t.Fatalf("expected closest MotoGP event (id 1), got %+v", next)
+		}
+	})
+
+	t.Run("f1 only list selects closest f1 event", func(t *testing.T) {
+		f1Events := []db.ListUpcomingEventsRow{
+			{
+				EventID:       2,
+				SerieID:       "f1",
+				EventName:     "Singapore GP",
+				EventStartsAt: pgtype.Timestamptz{Time: now.Add(96 * time.Hour), Valid: true},
+				EventStatus:   "scheduled",
+			},
+			{
+				EventID:       3,
+				SerieID:       "f1",
+				EventName:     "United States GP",
+				EventStartsAt: pgtype.Timestamptz{Time: now.Add(240 * time.Hour), Valid: true},
+				EventStatus:   "scheduled",
+			},
+		}
+
+		next := views.FindNextEvent(f1Events)
+		if next == nil || next.EventID != 2 || next.SerieID != "f1" {
+			t.Fatalf("expected closest F1 event (id 2), got %+v", next)
+		}
+	})
+
+	t.Run("motogp only list selects closest motogp event", func(t *testing.T) {
+		motogpEvents := []db.ListUpcomingEventsRow{
+			{
+				EventID:       1,
+				SerieID:       "motogp",
+				EventName:     "Indonesian GP",
+				EventStartsAt: pgtype.Timestamptz{Time: now.Add(48 * time.Hour), Valid: true},
+				EventStatus:   "scheduled",
+			},
+			{
+				EventID:       4,
+				SerieID:       "motogp",
+				EventName:     "Japanese GP",
+				EventStartsAt: pgtype.Timestamptz{Time: now.Add(120 * time.Hour), Valid: true},
+				EventStatus:   "scheduled",
+			},
+		}
+
+		next := views.FindNextEvent(motogpEvents)
+		if next == nil || next.EventID != 1 || next.SerieID != "motogp" {
+			t.Fatalf("expected closest MotoGP event (id 1), got %+v", next)
+		}
+	})
+
+	t.Run("skips cancelled events for scheduled upcoming", func(t *testing.T) {
+		events := []db.ListUpcomingEventsRow{
+			{
+				EventID:       10,
+				SerieID:       "f1",
+				EventName:     "Cancelled GP",
+				EventStartsAt: pgtype.Timestamptz{Time: now.Add(24 * time.Hour), Valid: true},
+				EventStatus:   "cancelled",
+			},
+			{
+				EventID:       11,
+				SerieID:       "f1",
+				EventName:     "Active GP",
+				EventStartsAt: pgtype.Timestamptz{Time: now.Add(72 * time.Hour), Valid: true},
+				EventStatus:   "scheduled",
+			},
+		}
+
+		next := views.FindNextEvent(events)
+		if next == nil || next.EventID != 11 {
+			t.Fatalf("expected non-cancelled event 11, got %+v", next)
+		}
+	})
+
+	t.Run("identifies live session in progress", func(t *testing.T) {
+		events := []db.ListUpcomingEventsRow{
+			{
+				EventID:       20,
+				SerieID:       "f1",
+				EventName:     "Live GP",
+				EventStartsAt: pgtype.Timestamptz{Time: now.Add(-1 * time.Hour), Valid: true},
+				EventStatus:   "scheduled",
+			},
+			{
+				EventID:       21,
+				SerieID:       "f1",
+				EventName:     "Next GP",
+				EventStartsAt: pgtype.Timestamptz{Time: now.Add(100 * time.Hour), Valid: true},
+				EventStatus:   "scheduled",
+			},
+		}
+
+		next := views.FindNextEvent(events)
+		if next == nil || next.EventID != 20 {
+			t.Fatalf("expected live event 20, got %+v", next)
+		}
+	})
+}
+
+func TestEventsSectionCountdownSeriesSync(t *testing.T) {
+	now := time.Now()
+	f1Event := db.ListUpcomingEventsRow{
+		EventID:       101,
+		SerieID:       "f1",
+		EventRound:    18,
+		EventSeason:   2026,
+		EventSlug:     "f1-2026-singapore-gp",
+		EventName:     "Singapore Grand Prix",
+		CircuitName:   "Marina Bay Street Circuit",
+		EventStartsAt: pgtype.Timestamptz{Time: now.Add(72 * time.Hour), Valid: true},
+		EventStatus:   "scheduled",
+	}
+	motogpEvent := db.ListUpcomingEventsRow{
+		EventID:       201,
+		SerieID:       "motogp",
+		EventRound:    15,
+		EventSeason:   2026,
+		EventSlug:     "motogp-2026-indonesian-gp",
+		EventName:     "Indonesian Grand Prix",
+		CircuitName:   "Mandalika International Street Circuit",
+		EventStartsAt: pgtype.Timestamptz{Time: now.Add(24 * time.Hour), Valid: true},
+		EventStatus:   "scheduled",
+	}
+
+	// 1. "ALL" selected: should contain telemetry HUD for Indonesian GP (closer) and wrap in #calendar-section
+	var allBuf bytes.Buffer
+	err := views.EventsSection("", []db.ListUpcomingEventsRow{motogpEvent, f1Event}).Render(context.Background(), &allBuf)
+	if err != nil {
+		t.Fatalf("failed to render ALL EventsSection: %v", err)
+	}
+	allHTML := allBuf.String()
+	if !strings.Contains(allHTML, `id="calendar-section"`) {
+		t.Errorf("expected calendar-section ID container")
+	}
+	if !strings.Contains(allHTML, `id="telemetry-hud"`) {
+		t.Errorf("expected telemetry-hud inside calendar-section for HTMX swap")
+	}
+	if !strings.Contains(allHTML, "Indonesian Grand Prix") {
+		t.Errorf("expected closest race (Indonesian GP) in ALL countdown widget")
+	}
+
+	// 2. "f1" selected: should contain telemetry HUD for Singapore Grand Prix
+	var f1Buf bytes.Buffer
+	err = views.EventsSection("f1", []db.ListUpcomingEventsRow{f1Event}).Render(context.Background(), &f1Buf)
+	if err != nil {
+		t.Fatalf("failed to render F1 EventsSection: %v", err)
+	}
+	f1HTML := f1Buf.String()
+	if !strings.Contains(f1HTML, "Singapore Grand Prix") {
+		t.Errorf("expected Singapore GP in F1 countdown widget")
+	}
+	if strings.Contains(f1HTML, "Indonesian Grand Prix") {
+		t.Errorf("did not expect MotoGP in F1 countdown widget")
+	}
+
+	// 3. "motogp" selected: should contain telemetry HUD for Indonesian Grand Prix
+	var motogpBuf bytes.Buffer
+	err = views.EventsSection("motogp", []db.ListUpcomingEventsRow{motogpEvent}).Render(context.Background(), &motogpBuf)
+	if err != nil {
+		t.Fatalf("failed to render MotoGP EventsSection: %v", err)
+	}
+	motogpHTML := motogpBuf.String()
+	if !strings.Contains(motogpHTML, "Indonesian Grand Prix") {
+		t.Errorf("expected Indonesian GP in MotoGP countdown widget")
+	}
+	if strings.Contains(motogpHTML, "Singapore Grand Prix") {
+		t.Errorf("did not expect F1 in MotoGP countdown widget")
+	}
+}
+
 

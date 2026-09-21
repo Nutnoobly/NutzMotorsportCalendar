@@ -115,4 +115,48 @@ func TestSEOIntegrationLiveDB(t *testing.T) {
 			t.Errorf("expected canonical link in event detail HTML")
 		}
 	}
+
+	// 4. Verify HTMX partials update countdown widget per series
+	fetchHTMX := func(url string) string {
+		req, _ := http.NewRequest("GET", url, nil)
+		req.Header.Set("HX-Request", "true")
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			t.Fatalf("failed HTMX request to %s: %v", url, err)
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("expected 200 for %s, got %d", url, resp.StatusCode)
+		}
+		b, _ := io.ReadAll(resp.Body)
+		return string(b)
+	}
+
+	// 4a. ALL partial
+	allHTML := fetchHTMX(ts.URL + "/")
+	if !strings.Contains(allHTML, `id="calendar-section"`) {
+		t.Errorf("expected calendar-section in HTMX partial")
+	}
+	if !strings.Contains(allHTML, `id="telemetry-hud"`) {
+		t.Errorf("expected telemetry-hud inside swapped calendar-section")
+	}
+
+	// 4b. F1 partial
+	f1HTML := fetchHTMX(ts.URL + "/?series=f1")
+	if !strings.Contains(f1HTML, `id="telemetry-hud"`) {
+		t.Errorf("expected telemetry-hud inside F1 calendar-section")
+	}
+	if !strings.Contains(f1HTML, "bg-[#e10600]") {
+		t.Errorf("expected active F1 tab style in partial")
+	}
+
+	// 4c. MotoGP partial
+	motogpHTML := fetchHTMX(ts.URL + "/?series=motogp")
+	if !strings.Contains(motogpHTML, `id="telemetry-hud"`) {
+		t.Errorf("expected telemetry-hud inside MotoGP calendar-section")
+	}
+	if !strings.Contains(motogpHTML, "bg-[#0090d0]") {
+		t.Errorf("expected active MotoGP tab style in partial")
+	}
 }

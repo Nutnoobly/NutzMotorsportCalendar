@@ -2,7 +2,6 @@ package views
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/Nutnoobly/NutzMotorsportCalendar/internal/db"
 )
@@ -10,13 +9,7 @@ import (
 // Home renders the complete homepage view.
 templ Home(selectedSeries string, events []db.ListUpcomingEventsRow) {
 	@Layout(DefaultHomeMeta(selectedSeries)) {
-		<div class="space-y-6 sm:space-y-10">
-			<!-- Hero Telemetry Countdown HUD -->
-			@CountdownWidget(findNextEvent(events))
-
-			<!-- Calendar Timeline Section (HTMX Swappable Target) -->
-			@EventsSection(selectedSeries, events)
-		</div>
+		@EventsSection(selectedSeries, events)
 	}
 }
 
@@ -90,65 +83,70 @@ templ CountdownWidget(event *db.ListUpcomingEventsRow) {
 
 // EventsSection renders the filter controls and calendar list (swapped via HTMX).
 templ EventsSection(selectedSeries string, events []db.ListUpcomingEventsRow) {
-	<div id="calendar-section" class="space-y-4 sm:space-y-6">
-		<!-- Filter Bar -->
-		<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-2 border-b border-slate-200 dark:border-[#262a34] transition-colors">
-			<!-- Filter Tabs with HTMX Swapping -->
-			<div class="inline-flex rounded-lg bg-slate-100 dark:bg-[#15181f] p-0.5 sm:p-1 border border-slate-200 dark:border-[#262a34] transition-colors">
-				<button
-					hx-get="/"
-					hx-target="#calendar-section"
-					hx-swap="outerHTML transition:true"
-					hx-push-url="true"
-					class={ "px-3 py-1 sm:px-4 sm:py-1.5 rounded-md text-xs font-mono font-bold transition ", templ.KV("bg-slate-900 dark:bg-slate-700 text-white", selectedSeries == ""), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "") }
-				>
-					ALL
-				</button>
-				<button
-					hx-get="/?series=f1"
-					hx-target="#calendar-section"
-					hx-swap="outerHTML transition:true"
-					hx-push-url="true"
-					class={ "px-3 py-1 sm:px-4 sm:py-1.5 rounded-md text-xs font-mono font-bold transition ", templ.KV("bg-[#e10600] text-white", selectedSeries == "f1"), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "f1") }
-				>
-					F1
-				</button>
-				<button
-					hx-get="/?series=motogp"
-					hx-target="#calendar-section"
-					hx-swap="outerHTML transition:true"
-					hx-push-url="true"
-					class={ "px-3 py-1 sm:px-4 sm:py-1.5 rounded-md text-xs font-mono font-bold transition ", templ.KV("bg-[#0090d0] text-white", selectedSeries == "motogp"), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "motogp") }
-				>
-					MOTOGP
-				</button>
+	<div id="calendar-section" class="space-y-6 sm:space-y-10">
+		<!-- Hero Telemetry Countdown HUD -->
+		@CountdownWidget(findNextEvent(events))
+
+		<div class="space-y-4 sm:space-y-6">
+			<!-- Filter Bar -->
+			<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-2 border-b border-slate-200 dark:border-[#262a34] transition-colors">
+				<!-- Filter Tabs with HTMX Swapping -->
+				<div class="inline-flex rounded-lg bg-slate-100 dark:bg-[#15181f] p-0.5 sm:p-1 border border-slate-200 dark:border-[#262a34] transition-colors">
+					<button
+						hx-get="/"
+						hx-target="#calendar-section"
+						hx-swap="outerHTML transition:true"
+						hx-push-url="true"
+						class={ "px-3 py-1 sm:px-4 sm:py-1.5 rounded-md text-xs font-mono font-bold transition ", templ.KV("bg-slate-900 dark:bg-slate-700 text-white", selectedSeries == ""), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "") }
+					>
+						ALL
+					</button>
+					<button
+						hx-get="/?series=f1"
+						hx-target="#calendar-section"
+						hx-swap="outerHTML transition:true"
+						hx-push-url="true"
+						class={ "px-3 py-1 sm:px-4 sm:py-1.5 rounded-md text-xs font-mono font-bold transition ", templ.KV("bg-[#e10600] text-white", selectedSeries == "f1"), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "f1") }
+					>
+						F1
+					</button>
+					<button
+						hx-get="/?series=motogp"
+						hx-target="#calendar-section"
+						hx-swap="outerHTML transition:true"
+						hx-push-url="true"
+						class={ "px-3 py-1 sm:px-4 sm:py-1.5 rounded-md text-xs font-mono font-bold transition ", templ.KV("bg-[#0090d0] text-white", selectedSeries == "motogp"), templ.KV("text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200", selectedSeries != "motogp") }
+					>
+						MOTOGP
+					</button>
+				</div>
+
+				<!-- Calendar Export Feeds -->
+				<div class="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs font-mono">
+					<span class="text-slate-500">Subscribe:</span>
+					<a href="/series/f1/calendar.ics" class="text-slate-600 dark:text-slate-400 hover:text-[#e10600] transition">
+						.ics (F1)
+					</a>
+					<span class="text-slate-300 dark:text-slate-700">|</span>
+					<a href="/series/motogp/calendar.ics" class="text-slate-600 dark:text-slate-400 hover:text-[#0090d0] transition">
+						.ics (MotoGP)
+					</a>
+				</div>
 			</div>
 
-			<!-- Calendar Export Feeds -->
-			<div class="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs font-mono">
-				<span class="text-slate-500">Subscribe:</span>
-				<a href="/series/f1/calendar.ics" class="text-slate-600 dark:text-slate-400 hover:text-[#e10600] transition">
-					.ics (F1)
-				</a>
-				<span class="text-slate-300 dark:text-slate-700">|</span>
-				<a href="/series/motogp/calendar.ics" class="text-slate-600 dark:text-slate-400 hover:text-[#0090d0] transition">
-					.ics (MotoGP)
-				</a>
-			</div>
+			<!-- Race List -->
+			if len(events) == 0 {
+				<div class="text-center py-12 sm:py-16 border border-dashed border-slate-300 dark:border-[#262a34] rounded-lg text-slate-500 font-mono text-sm">
+					No events found for this filter.
+				</div>
+			} else {
+				<div class="space-y-2.5 sm:space-y-3">
+					for _, event := range events {
+						@EventCard(event)
+					}
+				</div>
+			}
 		</div>
-
-		<!-- Race List -->
-		if len(events) == 0 {
-			<div class="text-center py-12 sm:py-16 border border-dashed border-slate-300 dark:border-[#262a34] rounded-lg text-slate-500 font-mono text-sm">
-				No events found for this filter.
-			</div>
-		} else {
-			<div class="space-y-2.5 sm:space-y-3">
-				for _, event := range events {
-					@EventCard(event)
-				}
-			</div>
-		}
 	</div>
 }
 
@@ -191,16 +189,7 @@ templ EventCard(event db.ListUpcomingEventsRow) {
 
 // Helper to find the first event that is currently upcoming
 func findNextEvent(events []db.ListUpcomingEventsRow) *db.ListUpcomingEventsRow {
-	now := time.Now()
-	for _, e := range events {
-		if e.EventStartsAt.Valid && e.EventStartsAt.Time.After(now) {
-			return &e
-		}
-	}
-	if len(events) > 0 {
-		return &events[0]
-	}
-	return nil
+	return FindNextEvent(events)
 }
 
 // SeriesCardBorder provides the distinctive 3px left stripe for motorsport cards
